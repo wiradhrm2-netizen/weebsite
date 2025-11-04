@@ -47,19 +47,23 @@
     color: #1a2b5f;
     letter-spacing: 1px;
 }
+/* Logo di tengah layar */
 .logo {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    width: 70px;
+    width: 120px; /* Ukuran pas & minimalis */
+    height: auto;
+    margin-bottom: 20px;
     opacity: 0;
-    animation: logoFade 1.2s ease forwards;
-    z-index: 999;
+    animation: logoFade 1s ease forwards;
+    /* Pusatkan logo di loading screen */
+    display: block;
 }
+
+/* Animasi fade-in logo */
 @keyframes logoFade {
-    0% { opacity: 0; transform: translateY(-10px); }
+    0% { opacity: 0; transform: translateY(-20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
+
 </style>
 </head>
 <body>
