@@ -1,86 +1,114 @@
-/* Matikan cursor global */
-* {
-    cursor: default !important;
-}
+* { margin: 0; padding: 0; box-sizing: border-box; }
 
 body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #dbe9ff, #f4f7ff);
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    min-height: 100vh;
-    background: #f2f2f2;
-    padding: 30px;
-    font-family: Arial, sans-serif;
+    align-items: center;
+    padding: 20px;
 }
 
-.container {
+.card {
     width: 100%;
-    max-width: 600px;
-    background: #fff;
-    padding: 30px;
-    border-radius: 14px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    max-width: 430px;
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(15px);
+    border-radius: 22px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+    animation: fadeIn 0.8s ease;
+}
+
+@keyframes fadeIn {
+    0% { opacity: 0; transform: translateY(20px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 20px;
+    font-size: 26px;
+    font-weight: 700;
+    color: #1a2b5f;
+    margin-bottom: 18px;
 }
 
-video {
-    width: 100%;
-    border-radius: 10px;
+h2 {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a2b5f;
+    margin: 20px 0 10px;
+}
+
+.scan-info {
+    font-size: 14px;
+    color: #555;
     margin-bottom: 10px;
-    background: #333;
 }
 
-/* Cursor aktif hanya pada form manual */
+#reader {
+    width: 100%;
+    border-radius: 16px;
+    overflow: hidden;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.12);
+}
+
 input, select {
-    cursor: text !important;
+    width: 100%;
+    padding: 13px;
+    margin: 7px 0;
+    border-radius: 14px;
+    border: none;
+    background: #f5f7ff;
+    font-size: 15px;
+    font-weight: 500;
+    transition: 0.2s;
+}
+
+input:focus, select:focus {
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 2px #6ea8fe;
 }
 
 button {
-    cursor: pointer !important;
     width: 100%;
-    padding: 12px;
-    margin: 7px 0;
-    background: #1a73e8;
+    padding: 14px;
+    background: #346dff;
     color: white;
-    border: none;
-    border-radius: 10px;
     font-size: 16px;
-    font-weight: bold;
+    font-weight: 600;
+    border-radius: 14px;
+    border: none;
+    margin: 10px 0;
+    cursor: pointer;
+    transition: 0.25s;
 }
 
 button:hover {
-    background: #155ab6;
+    background: #1c52d9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 15px rgba(0,0,0,0.15);
 }
 
-#log {
-    background: #eee;
-    padding: 12px;
-    border-radius: 8px;
-    margin-top: 10px;
-    white-space: pre-line;
-}
-
-/* Animasi success */
-@keyframes successPop {
-    0% { opacity: 0; transform: scale(0.5); }
-    60% { opacity: 1; transform: scale(1.05); }
-    100% { opacity: 1; transform: scale(1); }
-}
-
-@keyframes successFadeOut {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+.back {
+    background: #999 !important;
 }
 
 .success {
-    color: #0da60b;
-    font-weight: bold;
-    font-size: 20px;
-    text-align: center;
-    margin-top: 10px;
     display: none;
+    font-size: 20px;
+    font-weight: 600;
+    color: #0da60b;
+    text-align: center;
+    margin-top: 12px;
+    animation: pop 0.6s ease;
+}
+
+@keyframes pop {
+    0% { transform: scale(0.5); opacity: 0; }
+    60% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
 }
