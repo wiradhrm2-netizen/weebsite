@@ -125,6 +125,28 @@ body {
 
 .overlay.active { opacity: 1; visibility: visible; }
 
+/* Tabel Absensi Premium */
+table {
+    width:100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    border: 3px solid #FFD700;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+}
+th, td {
+    padding:12px;
+    text-align:center;
+    border-right: 2px solid #FFD700;
+}
+th:last-child, td:last-child { border-right: none; }
+th {
+    background:#FFD700;
+    color:#000;
+}
+tr:nth-child(even){background:#f9f9f9;}
+
 /* Responsive */
 @media (max-width: 600px) {
     .section h1 { font-size: 2rem; }
@@ -161,6 +183,43 @@ body {
     <h1>AOS — Absensi Online Siswa</h1>
     <p>Silahkan pilih untuk masuk ke halaman absensi.</p>
     <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke Absensi</button>
+
+    <!-- ===== Tabel Premium Terintegrasi ===== -->
+    <h2 style="margin-top:30px;">Contoh Daftar Absensi</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>No</th>
+                <th>NIS</th>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>12345</td>
+                <td>Budi Santoso</td>
+                <td>8A</td>
+                <td>Hadir</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>12346</td>
+                <td>Siti Aminah</td>
+                <td>8B</td>
+                <td>Izin</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>12347</td>
+                <td>Andi Prasetyo</td>
+                <td>8C</td>
+                <td>Hadir</td>
+            </tr>
+        </tbody>
+    </table>
 </div>
 
 <!-- Section: Tentang AOS -->
