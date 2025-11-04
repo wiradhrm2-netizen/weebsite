@@ -5,30 +5,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Absensi Siswa</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
-
 <script src="https://unpkg.com/html5-qrcode"></script>
-    <link rel="stylesheet" href="style.css">
 <style>
-.notif {
-    position: fixed;
-    bottom: 25px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
-    background: rgba(255, 80, 80, 0.95);
-    color: #fff;
-    padding: 14px 22px;
-    border-radius: 14px;
-    font-size: 15px;
-    font-weight: 600;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    opacity: 0;
-    transition: 0.35s;
-    pointer-events: none;
-}
-.notif.show {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-}
+body { font-family: 'Poppins', sans-serif; background:#f5f6fa; display:flex; justify-content:center; padding:20px; }
+.card { background:#fff; padding:25px 35px; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:100%; max-width:450px; }
+input, select, button { width:100%; margin:7px 0; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:14px; }
+button { cursor:pointer; border:none; font-weight:600; }
+button#kirimManual { background:#346dff; color:#fff; }
+button#backBtn { background:#999; color:#fff; }
+.success { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:#fff; padding:15px 30px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; font-weight:600; text-align:center; }
+.notif { position:fixed; bottom:25px; left:50%; transform:translateX(-50%) scale(0.8); background:rgba(255,80,80,0.95); color:#fff; padding:14px 22px; border-radius:14px; font-size:15px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.15); opacity:0; transition:0.35s; pointer-events:none; text-align:center; }
+.notif.show { opacity:1; transform:translateX(-50%) scale(1); }
 </style>
 </head>
 <body>
@@ -51,21 +38,45 @@
     <input id="manualKet" placeholder="Keterangan (opsional)" />
 
     <button id="kirimManual">Kirim Absen</button>
-    <button id="backBtn" style="background:#999">Kembali</button>
-
-    <div class="success" id="successMsg">✅ Absensi Berhasil</div>
+    <button id="backBtn">Kembali</button>
 </div>
+
+<div id="successMsg" class="success">✅ Absensi Berhasil</div>
+<div id="notif" class="notif">⚠️ Silahkan mengisi terlebih dahulu</div>
 
 <script>
 let sudahAbsen = false;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
+/* === SHOW NOTIFIKASI SUKSES === */
 function showSuccess() {
     const s = document.getElementById("successMsg");
     s.style.display = "block";
     beep.play();
+
+    setTimeout(() => {
+        s.style.display = "none";
+        // Reset form & status agar bisa absensi lagi
+        document.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
+        document.getElementById("scanStatus").innerText = "Silahkan scan QR atau isi manual.";
+        sudahAbsen = false;
+        document.getElementById("manualId").value = "";
+        document.getElementById("manualNama").value = "";
+        document.getElementById("manualKelas").value = "";
+        document.getElementById("manualStatus").value = "Hadir";
+        document.getElementById("manualKet").value = "";
+    }, 2000);
 }
 
+/* === SHOW NOTIFIKASI ERROR === */
+function showNotif(msg) {
+    const n = document.getElementById("notif");
+    n.innerText = msg;
+    n.classList.add("show");
+    setTimeout(() => n.classList.remove("show"), 2000);
+}
+
+/* === KUNCI FORM === */
 function kunciForm() {
     document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
 }
@@ -81,12 +92,12 @@ Html5Qrcode.getCameras().then(cameras => {
                 if (sudahAbsen) return;
 
                 if (!qr || qr.trim() === "") {
-                    document.getElementById("scanStatus").innerText = "Silahkan scan terlebih dahulu";
+                    showNotif("⚠️ QR kosong, silahkan scan ulang");
                     return;
                 }
 
                 sudahAbsen = true;
-                qrReader.stop();
+                reader.stop();
                 document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
                 showSuccess();
                 kunciForm();
@@ -99,13 +110,12 @@ Html5Qrcode.getCameras().then(cameras => {
 document.getElementById("kirimManual").onclick = () => {
     if (sudahAbsen) return;
 
-    // Validasi form manual
     const nis = document.getElementById("manualId").value.trim();
     const nama = document.getElementById("manualNama").value.trim();
     const kelas = document.getElementById("manualKelas").value.trim();
 
     if (!nis || !nama || !kelas) {
-        alert("Silahkan mengisi form atau Scan Qr terlebih dahulu.");
+        showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu");
         return;
     }
 
@@ -114,11 +124,19 @@ document.getElementById("kirimManual").onclick = () => {
     kunciForm();
 };
 
-/* === BACK === */
+/* === BACK BUTTON === */
 document.getElementById("backBtn").onclick = () => {
-    location.reload();
+    // Reset form & QR status
+    reader.stop().catch(() => {}); // hentikan kamera jika aktif
+    document.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
+    document.getElementById("scanStatus").innerText = "Silahkan scan QR atau isi manual.";
+    document.getElementById("manualId").value = "";
+    document.getElementById("manualNama").value = "";
+    document.getElementById("manualKelas").value = "";
+    document.getElementById("manualStatus").value = "Hadir";
+    document.getElementById("manualKet").value = "";
+    sudahAbsen = false;
 };
 </script>
-    <div id="notif" class="notif">⚠️ Silahkan mengisi terlebih dahulu</div>
-</body
+</body>
 </html>
