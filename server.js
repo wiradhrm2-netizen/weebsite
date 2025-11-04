@@ -1,57 +1,57 @@
-const express = require('express');
-const bodyParser = require('body-parser');
-const cors = require('cors');
-const XLSX = require('xlsx');
-const fs = require('fs');
-const path = require('path');
+// === QR CODE SCAN ===
+let scanner = new Instascan.Scanner({ video: document.getElementById('preview') });
 
+scanner.addListener('scan', function (content) {
+    document.getElementById('scanResult').innerText = "Hasil Scan: " + content;
+    addLog("Scan: " + content);
 
-const app = express();
-app.use(cors());
-app.use(bodyParser.json());
-app.use(express.static(__dirname));
-
-
-const FILE = path.join(__dirname, 'attendance.xlsx');
-
-
-function ensureWorkbook(){
-if(!fs.existsSync(FILE)){
-const wb = XLSX.utils.book_new();
-const ws = XLSX.utils.json_to_sheet([]);
-XLSX.utils.book_append_sheet(wb, ws, 'Sheet1');
-XLSX.writeFile(wb, FILE);
-}
-}
-
-
-function appendRow(row){
-ensureWorkbook();
-const wb = XLSX.readFile(FILE);
-const ws = wb.Sheets['Sheet1'];
-const data = XLSX.utils.sheet_to_json(ws, {defval:''});
-data.push(row);
-const newWs = XLSX.utils.json_to_sheet(data);
-wb.Sheets['Sheet1'] = newWs;
-XLSX.writeFile(wb, FILE);
-}
-
-
-app.post('/attendance', (req,res)=>{
-const b = req.body;
-const row = {
-Timestamp: b.timestamp,
-ID: b.id,
-Name: b.name,
-Class: b.class,
-Status: b.status, // hadir, izin, sakit
-Note: b.note
-};
-
-
-appendRow(row);
-res.json({success:true, message:'Tersimpan ke Excel'});
+    // Kirim ke server
+    fetch("/absen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "scan", data: content })
+    });
 });
 
+// Mulai kamera
+document.getElementById("startScan").onclick = async () => {
+    try {
+        let cameras = await Instascan.Camera.getCameras();
+        if (cameras.length > 0) {
+            scanner.start(cameras[0]);
+        } else {
+            alert("Kamera tidak ditemukan!");
+        }
+    } catch (err) {
+        alert("Izin kamera diblokir! Gunakan HTTPS atau izinkan kamera.");
+    }
+};
 
-app.listen(3000, ()=> console.log('Server berjalan http://localhost:3000'));
+// Stop kamera
+document.getElementById("stopScan").onclick = () => {
+    scanner.stop();
+};
+
+// === ISI MANUAL ===
+document.getElementById("kirimManual").onclick = () => {
+    let data = {
+        nis: document.getElementById("manualId").value,
+        nama: document.getElementById("manualNama").value,
+        kelas: document.getElementById("manualKelas").value,
+        status: document.getElementById("manualStatus").value,
+        ket: document.getElementById("manualKet").value
+    };
+
+    addLog("Manual Input: " + JSON.stringify(data));
+
+    fetch("/absen", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ type: "manual", data })
+    });
+};
+
+// === LOG SYSTEM ===
+function addLog(msg) {
+    document.getElementById("log").innerText += msg + "\n";
+}
