@@ -8,6 +8,7 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 <link rel="stylesheet" href="style.css">
 <style>
+/* ===== Premium Card Style ===== */
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #f5f7ff, #e0ebff);
@@ -40,6 +41,8 @@ button#kirimManual { background:#346dff; color:#fff; }
 button#kirimManual:hover { background:#1a52d1; }
 button#backBtn { background:#999; color:#fff; }
 button#backBtn:hover { background:#666; }
+
+/* ===== Notifikasi ===== */
 .success {
     display:none;
     position:fixed;
@@ -83,11 +86,6 @@ button#backBtn:hover { background:#666; }
     <h1>Absensi Siswa</h1>
 
     <h2>Scan QR</h2>
-    <!-- Dropdown pilih kamera -->
-    <select id="pilihKamera" style="width:100%;padding:10px;margin-bottom:10px;border-radius:10px;">
-        <option value="">Memuat kamera...</option>
-    </select>
-
     <div id="reader"></div>
     <p id="scanStatus" style="font-size:14px;color:#555">Mengaktifkan kamera...</p>
 
@@ -113,20 +111,24 @@ button#backBtn:hover { background:#666; }
 let sudahAbsen = false;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
+/* ===== Fungsi Kembali ke Landing Page ===== */
 function kembaliKeLanding() {
-    window.location.href = "index.html";
+    window.location.href = "index.html"; // landing page
 }
 
+/* ===== Notifikasi Sukses ===== */
 function showSuccess() {
     const s = document.getElementById("successMsg");
     s.style.display = "block";
     beep.play();
+
     setTimeout(() => {
         s.style.display = "none";
         kembaliKeLanding();
     }, 2000);
 }
 
+/* ===== Notifikasi Error ===== */
 function showNotif(msg) {
     const n = document.getElementById("notif");
     n.innerText = msg;
@@ -134,77 +136,61 @@ function showNotif(msg) {
     setTimeout(() => n.classList.remove("show"), 2000);
 }
 
+/* ===== Kunci Form ===== */
 function kunciForm() {
     document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ===== SCAN QR DENGAN PILIH KAMERA ===== */
+/* ===== SCAN QR (TAMBAHAN: KAMERA BELAKANG + VALIDASI) ===== */
 const reader = new Html5Qrcode("reader");
-let daftarKamera = [];
-
-// Ambil semua kamera
 Html5Qrcode.getCameras().then(cameras => {
-    daftarKamera = cameras;
-    const select = document.getElementById("pilihKamera");
-    select.innerHTML = "";
+    if (cameras.length > 0) {
+        // Pilih kamera belakang jika tersedia
+        let backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")) || cameras[0];
 
-    cameras.forEach(cam => {
-        const option = document.createElement("option");
-        option.value = cam.id;
-        option.text = cam.label || cam.id;
-        select.appendChild(option);
-    });
+        reader.start(
+            backCamera.id,
+            { fps: 10, qrbox: 250 },
+            qr => {
+                if (sudahAbsen) return;
 
-    if(cameras.length > 0){
-        mulaiScan(cameras[0].id); // default kamera pertama
+                // Validasi QR kosong
+                if (!qr || qr.trim() === "") {
+                    showNotif("⚠️ QR kosong, silahkan scan ulang");
+                    return;
+                }
+
+                // Validasi format QR minimal: NIS|Nama|Kelas
+                const parts = qr.split('|');
+                if (parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()) {
+                    showNotif("⚠️ QR tidak valid, silahkan scan ulang");
+                    return;
+                }
+
+                sudahAbsen = true;
+                reader.stop();
+                document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+
+                // Tambah data ke localStorage
+                const tanggal = new Date().toLocaleDateString();
+                const nisQR = parts[0].trim();
+                const namaQR = parts[1].trim();
+                const kelasQR = parts[2].trim();
+                const statusQR = parts[3]?.trim() || "Hadir";
+                const ketQR = parts[4]?.trim() || "";
+
+                let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
+                dataAbsensi.push({ tanggal, nis: nisQR, nama: namaQR, kelas: kelasQR, status: statusQR, ket: ketQR });
+                localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
+
+                showSuccess();
+                kunciForm();
+            }
+        );
     }
 });
 
-function mulaiScan(cameraId){
-    reader.stop().catch(()=>{});
-    reader.start(
-        cameraId,
-        { fps: 10, qrbox: 250 },
-        qr => {
-            if(sudahAbsen) return;
-            if(!qr || qr.trim() === ""){
-                showNotif("⚠️ QR kosong, silahkan scan ulang");
-                return;
-            }
-
-            const parts = qr.split('|');
-            if(parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()){
-                showNotif("⚠️ QR tidak valid, silahkan scan ulang");
-                return;
-            }
-
-            sudahAbsen = true;
-            reader.stop();
-            document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
-
-            const tanggal = new Date().toLocaleDateString();
-            const nisQR = parts[0].trim();
-            const namaQR = parts[1].trim();
-            const kelasQR = parts[2].trim();
-            const statusQR = parts[3]?.trim() || "Hadir";
-            const ketQR = parts[4]?.trim() || "";
-
-            let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
-            dataAbsensi.push({tanggal, nis: nisQR, nama: namaQR, kelas: kelasQR, status: statusQR, ket: ketQR});
-            localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
-
-            showSuccess();
-            kunciForm();
-        }
-    );
-}
-
-// Ganti kamera saat dipilih user
-document.getElementById("pilihKamera").onchange = (e) => {
-    if(e.target.value) mulaiScan(e.target.value);
-};
-
-/* ===== Default value form manual ===== */
+/* ===== Default value form manual (TAMBAHAN) ===== */
 document.getElementById("manualId").value = "12345";
 document.getElementById("manualNama").value = "Aku Hebat";
 document.getElementById("manualKelas").value = "11";
@@ -225,6 +211,7 @@ document.getElementById("kirimManual").onclick = () => {
         return;
     }
 
+    // Tambah data ke localStorage
     let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
     dataAbsensi.push({ tanggal, nis, nama, kelas, status, ket });
     localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
