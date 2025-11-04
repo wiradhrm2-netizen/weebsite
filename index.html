@@ -1,15 +1,13 @@
 <!-- ===================== -->
-<!-- index.html (Landing Page AOS + Sidebar Menu Tentang AOS) -->
+<!-- index.html (Landing Page + Tentang AOS) -->
 <!-- ===================== -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Selamat Datang | AOS</title>
-
+<title>AOS | Absensi Online Siswa</title>
 <style>
-/* ===================== */
 /* Reset & Font */
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body {
@@ -51,7 +49,7 @@ body {
 }
 
 /* ===================== */
-/* Logo di tenagh layar */
+/* Logo */
 .logo {
     width: 120px;
     height: auto;
@@ -68,37 +66,38 @@ body {
 }
 
 /* ===================== */
-/* Landing Page */
-.landing {
+/* Landing & Tentang */
+.section {
     min-height: 100vh;
-    display: flex; flex-direction: column;
+    display: none;
+    flex-direction: column;
     justify-content: center; align-items: center;
     text-align: center; padding: 20px;
 }
 
-.landing-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; }
-.landing-sub { font-size: 1.2rem; color: #555; margin-bottom: 30px; }
+.section.active { display: flex; }
 
-/* ===================== */
+.section h1, .section h2 { color: #346dff; margin-bottom: 15px; }
+.section p { font-size: 1rem; color: #1a2b5f; margin-bottom: 20px; max-width: 800px; }
+
 /* Button */
-.btn-primary {
+.btn-primary, .btn-back {
+    display: inline-block;
     background: #346dff; color: #fff;
-    border: none; padding: 15px 35px;
-    font-size: 1rem; border-radius: 10px;
-    cursor: pointer; transition: all 0.3s ease;
-    box-shadow: 0 5px 15px rgba(52,109,255,0.2);
+    border: none; padding: 12px 30px;
+    border-radius: 8px; cursor: pointer;
+    font-weight: 600; text-decoration: none;
+    transition: all 0.3s ease;
 }
 
-.btn-primary:hover { background: #1a52d1; transform: translateY(-2px); }
+.btn-primary:hover, .btn-back:hover { background: #1a52d1; }
 
-/* ===================== */
 /* Hamburger Menu */
 .hamburger {
     position: fixed; top: 20px; right: 20px;
     width: 35px; height: 30px;
     display: flex; flex-direction: column;
-    justify-content: space-between;
-    cursor: pointer; z-index: 10001;
+    justify-content: space-between; cursor: pointer; z-index: 10001;
 }
 
 .hamburger span {
@@ -111,7 +110,6 @@ body {
 .hamburger.active span:nth-child(2) { opacity: 0; }
 .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
 
-/* ===================== */
 /* Sidebar Menu */
 .sidebar {
     position: fixed; top: 0; right: -250px;
@@ -131,7 +129,7 @@ body {
 
 .sidebar.active { right: 0; }
 
-/* Overlay Background saat sidebar aktif */
+/* Overlay */
 .overlay {
     position: fixed; top: 0; left: 0;
     width: 100%; height: 100%;
@@ -141,16 +139,12 @@ body {
     z-index: 9999;
 }
 
-.overlay.active {
-    opacity: 1; visibility: visible;
-}
+.overlay.active { opacity: 1; visibility: visible; }
 
 /* Responsive */
 @media (max-width: 600px) {
-    .landing-title { font-size: 2rem; }
-    .landing-sub { font-size: 1rem; }
-    .btn-primary { padding: 12px 25px; font-size: 0.95rem; }
-    .sidebar { width: 200px; padding: 50px 15px; }
+    .section h1 { font-size: 2rem; }
+    .section h2 { font-size: 1.5rem; }
 }
 </style>
 </head>
@@ -163,11 +157,11 @@ body {
 
 <!-- Sidebar Menu -->
 <div class="sidebar" id="sidebarMenu">
-    <a href="#">Beranda</a>
-    <a href="#">Tentang AOS</a>
-    <a href="#">Cara Menggunakan</a>
-    <a href="absensi.html">Absensi</a>
-    <a href="#">Kontak / Bantuan</a>
+    <a href="#" data-section="home">Beranda</a>
+    <a href="#" data-section="tentang">Tentang AOS</a>
+    <a href="#" data-section="cara">Cara Menggunakan</a>
+    <a href="#" data-section="absensi">Absensi</a>
+    <a href="#" data-section="kontak">Kontak / Bantuan</a>
 </div>
 
 <!-- Overlay -->
@@ -182,11 +176,42 @@ body {
     <div class="loading-text">AOS Loading...</div>
 </div>
 
-<!-- Landing Page Content -->
-<div class="landing">
-    <h1 class="landing-title">AOS — Absensi Online Siswa</h1>
-    <p class="landing-sub">Silahkan pilih untuk masuk ke halaman absensi</p>
-    <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke AOS — Absensi Online Siswa</button>
+<!-- Section: Beranda -->
+<div class="section active" id="home">
+    <h1>AOS — Absensi Online Siswa</h1>
+    <p>Silahkan pilih untuk masuk ke halaman absensi.</p>
+    <button onclick="alert('Menu Absensi diklik!');" class="btn-primary">Masuk ke Absensi</button>
+</div>
+
+<!-- Section: Tentang AOS -->
+<div class="section" id="tentang">
+    <h2>Apa itu AOS?</h2>
+    <p>AOS (Absensi Online Siswa) adalah sistem absensi berbasis web untuk memudahkan sekolah
+    dalam mencatat kehadiran siswa secara digital. Proses absensi menjadi cepat, akurat,
+    dan ramah lingkungan karena mengurangi penggunaan kertas.</p>
+
+    <h2>Fitur Utama AOS</h2>
+    <p>
+    1. Absensi QR Code<br>
+    2. Form Manual<br>
+    3. Laporan Real-Time<br>
+    4. Notifikasi Absensi
+    </p>
+
+    <h2>Manfaat AOS</h2>
+    <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah
+    monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
+
+    <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
+</div>
+
+<!-- Section: Cara Menggunakan -->
+<div class="section" id="cara">
+    <h2>Cara Menggunakan AOS</h2>
+    <p>1. Siswa memindai QR Code yang diberikan sekolah.<br>
+       2. Atau mengisi form manual jika tidak bisa scan.<br>
+       3. Guru/staf dapat memantau absensi melalui dashboard secara real-time.</p>
+    <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
 </div>
 
 <script>
@@ -200,10 +225,11 @@ window.onload = () => {
     }, 1200);
 };
 
-// Hamburger Menu & Sidebar Toggle
+// Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburgerMenu');
 const sidebar = document.getElementById('sidebarMenu');
 const overlay = document.getElementById('overlay');
+const sections = document.querySelectorAll('.section');
 
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
@@ -216,6 +242,33 @@ overlay.addEventListener('click', () => {
     hamburger.classList.remove('active');
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
+});
+
+// Menu navigasi
+sidebar.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const target = link.getAttribute('data-section');
+
+        // Tampilkan section yang dipilih
+        sections.forEach(sec => sec.classList.remove('active'));
+        const activeSection = document.getElementById(target);
+        if(activeSection) activeSection.classList.add('active');
+
+        // Tutup sidebar
+        hamburger.classList.remove('active');
+        sidebar.classList.remove('active');
+        overlay.classList.remove('active');
+    });
+});
+
+// Tombol Kembali
+document.querySelectorAll('.btn-back').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        sections.forEach(sec => sec.classList.remove('active'));
+        document.getElementById('home').classList.add('active');
+    });
 });
 </script>
 
