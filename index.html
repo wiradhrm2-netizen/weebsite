@@ -1,57 +1,48 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Absensi - Scan QR atau Isi Manual</title>
-<link rel="stylesheet" href="styles.css" />
-<script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Absensi Kelas</title>
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Instascan -->
+    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
 </head>
 <body>
-<main class="card">
-<h1>Absensi Sekolah / Kantor</h1>
 
+<div class="container">
+    <h1>Absensi Kelas</h1>
 
-<section class="half">
-<h2>Scan QR</h2>
-<div id="reader" style="width:100%"></div>
-<p id="scan-result">Belum ada hasil scan.</p>
-<button id="start-scan">Mulai Scan</button>
-<button id="stop-scan">Stop Scan</button>
-</section>
+    <h2>Scan QR</h2>
+    <video id="preview"></video>
+    <p id="scanResult">Belum ada hasil scan.</p>
 
+    <button id="startScan">Mulai Scan</button>
+    <button id="stopScan">Stop Scan</button>
 
-<section class="half">
-<h2>Isi Manual</h2>
-<form id="manual-form">
-<label>Nomor ID<br><input name="id" required /></label>
-<label>Nama<br><input name="name" required /></label>
-<label>Kelas / Departemen<br><input name="class" /></label>
+    <hr>
 
+    <h2>Isi Manual</h2>
 
-<label>Status Kehadiran<br>
-<select name="status" required>
-<option value="hadir">Hadir</option>
-<option value="izin">Izin</option>
-<option value="sakit">Sakit</option>
-</select>
-</label>
+    <input id="manualId" placeholder="NIS">
+    <input id="manualNama" placeholder="Nama">
+    <input id="manualKelas" placeholder="Kelas">
 
+    <select id="manualStatus">
+        <option value="Hadir">Hadir</option>
+        <option value="Izin">Izin</option>
+        <option value="Sakit">Sakit</option>
+    </select>
 
-<label>Keterangan<br><input name="note" placeholder="opsional" /></label>
-<button type="submit">Kirim Absensi</button>
-</form>
-<p id="form-status"></p>
-</section>
+    <input id="manualKet" placeholder="Keterangan (opsional)">
 
+    <button id="kirimManual">Kirim Absensi</button>
 
-<section class="log">
-<h3>Log (Client)</h3>
-<pre id="log"></pre>
-</section>
-</main>
+    <h3>Log (Client)</h3>
+    <div id="log"></div>
+</div>
 
-
-<script src="app.js"></script>
+<script src="script.js"></script>
 </body>
 </html>
