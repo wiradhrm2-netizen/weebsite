@@ -1,23 +1,12 @@
 let sudahAbsen = false;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-/* === NOTIFIKASI SUKSES === */
 function showSuccess() {
     const success = document.getElementById("successMsg");
     success.style.display = "block";
     beep.play();
-
-    // Setelah 2 detik, sembunyikan notifikasi & kembali ke section home
-    setTimeout(() => {
-        success.style.display = "none";
-
-        // Aktifkan section home (single-page)
-        document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-        document.getElementById("home").classList.add("active");
-    }, 2000);
 }
 
-/* === KUNCI FORM === */
 function kunciForm() {
     document.querySelectorAll("input, select, #kirimManual")
         .forEach(el => el.disabled = true);
@@ -40,6 +29,11 @@ Html5Qrcode.getCameras().then(cameras => {
                 document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
                 showSuccess();
                 kunciForm();
+
+                // Tambahan: redirect otomatis ke landing page setelah scan QR berhasil
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 500);
             }
         );
     }
@@ -52,11 +46,14 @@ document.getElementById("kirimManual").onclick = () => {
     sudahAbsen = true;
     showSuccess();
     kunciForm();
+
+    // Tambahan: redirect otomatis ke landing page setelah klik tombol kirim
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 500);
 };
 
-/* === BACK BUTTON === */
+/* === BACK === */
 document.getElementById("backBtn").onclick = () => {
-    // Jika tombol back ingin reload atau kembali ke Beranda
-    document.querySelectorAll(".section").forEach(sec => sec.classList.remove("active"));
-    document.getElementById("home").classList.add("active");
+    location.reload();
 };
