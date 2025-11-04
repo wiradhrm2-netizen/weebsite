@@ -1,4 +1,4 @@
-root{--bg:#f6f8fa;--card:#ffffff;--accent:#0b74de}
+:root{--bg:#f6f8fa;--card:#ffffff;--accent:#0b74de}
 *{box-sizing:border-box}
 body{font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);padding:24px}
 .card{max-width:1000px;margin:24px auto;padding:20px;background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(20,20,30,0.06)}
