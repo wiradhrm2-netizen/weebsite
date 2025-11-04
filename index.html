@@ -1,46 +1,124 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Absensi Siswa Premium</title>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Absensi Siswa</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-    <!-- CSS -->
+<script src="https://unpkg.com/html5-qrcode"></script>
     <link rel="stylesheet" href="style.css">
-
-    <!-- QR Scanner -->
-    <script src="https://unpkg.com/html5-qrcode"></script>
+<style>
+.notif {
+    position: fixed;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.8);
+    background: rgba(255, 80, 80, 0.95);
+    color: #fff;
+    padding: 14px 22px;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    opacity: 0;
+    transition: 0.35s;
+    pointer-events: none;
+}
+.notif.show {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+}
+</style>
 </head>
 <body>
-
 <div class="card">
-    <h1>Absensi Siswa Premium</h1>
+    <h1>Absensi Siswa</h1>
 
     <h2>Scan QR</h2>
     <div id="reader"></div>
-    <p id="scanStatus" class="scan-info">Mengaktifkan kamera...</p>
+    <p id="scanStatus" style="font-size:14px;color:#555">Mengaktifkan kamera...</p>
 
     <h2>Isi Manual</h2>
-
     <input id="manualId" placeholder="NIS" autocomplete="off" />
     <input id="manualNama" placeholder="Nama Lengkap" />
     <input id="manualKelas" placeholder="Kelas (misal 8A)" />
-
     <select id="manualStatus">
         <option value="Hadir">Hadir</option>
         <option value="Izin">Izin</option>
         <option value="Sakit">Sakit</option>
     </select>
-
     <input id="manualKet" placeholder="Keterangan (opsional)" />
 
     <button id="kirimManual">Kirim Absen</button>
-    <button id="backBtn" class="back">Kembali</button>
+    <button id="backBtn" style="background:#999">Kembali</button>
 
     <div class="success" id="successMsg">✅ Absensi Berhasil</div>
 </div>
 
-<!-- JS -->
-<script src="script.js"></script>
-</body>
+<script>
+let sudahAbsen = false;
+const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+
+function showSuccess() {
+    const s = document.getElementById("successMsg");
+    s.style.display = "block";
+    beep.play();
+}
+
+function kunciForm() {
+    document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
+}
+
+/* === SCAN QR === */
+const reader = new Html5Qrcode("reader");
+Html5Qrcode.getCameras().then(cameras => {
+    if (cameras.length > 0) {
+        reader.start(
+            cameras[0].id,
+            { fps: 10, qrbox: 250 },
+            qr => {
+                if (sudahAbsen) return;
+
+                if (!qr || qr.trim() === "") {
+                    document.getElementById("scanStatus").innerText = "Silahkan scan terlebih dahulu";
+                    return;
+                }
+
+                sudahAbsen = true;
+                qrReader.stop();
+                document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+                showSuccess();
+                kunciForm();
+            }
+        );
+    }
+});
+
+/* === KIRIM MANUAL === */
+document.getElementById("kirimManual").onclick = () => {
+    if (sudahAbsen) return;
+
+    // Validasi form manual
+    const nis = document.getElementById("manualId").value.trim();
+    const nama = document.getElementById("manualNama").value.trim();
+    const kelas = document.getElementById("manualKelas").value.trim();
+
+    if (!nis || !nama || !kelas) {
+        alert("Silahkan mengisi data manual terlebih dahulu.");
+        return;
+    }
+
+    sudahAbsen = true;
+    showSuccess();
+    kunciForm();
+};
+
+/* === BACK === */
+document.getElementById("backBtn").onclick = () => {
+    location.reload();
+};
+</script>
+    <div id="notif" class="notif">⚠️ Silahkan mengisi terlebih dahulu</div>
+</body
 </html>
