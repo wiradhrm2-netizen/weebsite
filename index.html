@@ -47,20 +47,20 @@
     color: #1a2b5f;
     letter-spacing: 1px;
 }
-/* Logo di atas landing page */
-.logo {
-    width: 120px; /* Ukuran pas & minimalis */
+/* Logo di landing page di atas tombol */
+.landing-logo {
+    width: 80px;          /* Ukuran pas dan minimalis */
     height: auto;
-    margin-bottom: 25px;
-    opacity: 0;
-    animation: logoFade 1s ease forwards;
-    /* Pusatkan logo di loading screen */
+    margin: 20px 0;       /* Jarak antara tulisan dan tombol */
     display: block;
+    opacity: 0;
+    animation: fadeInLogo 1s ease forwards;
+    animation-delay: 0.5s; /* muncul sedikit setelah halaman siap */
 }
 
 /* Animasi fade-in logo */
-@keyframes logoFade {
-    0% { opacity: 0; transform: translateY(-20px); }
+@keyframes fadeInLogo {
+    0% { opacity: 0; transform: translateY(-10px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
