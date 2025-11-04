@@ -57,7 +57,22 @@
     /* Pusatkan logo di loading screen */
     display: block;
 }
+/* Logo di atas landing page */
+.landing-logo {
+    width: 100px;        /* Ukuran pas, minimalis */
+    height: auto;
+    margin-bottom: 25px; /* Jarak dengan judul */
+    display: block;
+    opacity: 0;
+    animation: fadeInLogo 1s ease forwards;
+    animation-delay: 1.2s; /* Muncul setelah loading selesai */
+}
 
+/* Animasi logo fade-in */
+@keyframes fadeInLogo {
+    0% { opacity: 0; transform: translateY(-20px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
 /* Animasi fade-in logo */
 @keyframes logoFade {
     0% { opacity: 0; transform: translateY(-20px); }
