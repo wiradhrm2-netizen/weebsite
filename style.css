@@ -1,14 +1,73 @@
-:root{--bg:#f6f8fa;--card:#ffffff;--accent:#0b74de}
-*{box-sizing:border-box}
-body{font-family:Inter,system-ui,Segoe UI,Arial;background:var(--bg);padding:24px}
-.card{max-width:1000px;margin:24px auto;padding:20px;background:var(--card);border-radius:12px;box-shadow:0 6px 20px rgba(20,20,30,0.06)}
-h1{text-align:center;margin-bottom:12px}
-.half{display:inline-block;vertical-align:top;width:48%;padding:10px}
-.half h2{margin-top:0}
-label{display:block;margin-bottom:8px}
-input,select{width:100%;padding:8px;margin-top:6px;border-radius:6px;border:1px solid #ddd}
-button{background:var(--accent);color:white;border:none;padding:10px 14px;border-radius:8px;cursor:pointer}
-button:disabled{opacity:.6}
-.log{margin-top:18px}
-pre{background:#f3f6fb;padding:12px;border-radius:8px;height:120px;overflow:auto}
-@media (max-width:800px){.half{display:block;width:100%;margin-bottom:12px}}
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+    background: #f2f2f2;
+    padding: 30px;
+}
+
+.container {
+    width: 100%;
+    max-width: 600px;
+    background: #fff;
+    padding: 30px;
+    border-radius: 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+h1 {
+    text-align: center;
+    font-size: 26px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+video {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 10px;
+    background: #333;
+}
+
+input, select, button {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+}
+
+button {
+    background: #1a73e8;
+    color: white;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+button:hover {
+    background: #155ab6;
+}
+
+#log {
+    background: #eee;
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 10px;
+    font-size: 14px;
+    white-space: pre-line;
+}
