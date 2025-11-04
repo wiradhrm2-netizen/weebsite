@@ -1,4 +1,4 @@
-/* Matikan semua cursor */
+/* Matikan cursor global */
 * {
     cursor: default !important;
 }
@@ -13,7 +13,6 @@ body {
     font-family: Arial, sans-serif;
 }
 
-/* Container */
 .container {
     width: 100%;
     max-width: 600px;
@@ -23,19 +22,11 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-/* Judul & Sub Judul */
 h1 {
     text-align: center;
-    font-size: 26px;
     margin-bottom: 20px;
 }
 
-h2 {
-    margin-top: 20px;
-    margin-bottom: 10px;
-}
-
-/* Video QR */
 video {
     width: 100%;
     border-radius: 10px;
@@ -43,7 +34,7 @@ video {
     background: #333;
 }
 
-/* Aktifkan cursor hanya di input manual */
+/* Cursor aktif hanya pada form manual */
 input, select {
     cursor: text !important;
 }
@@ -52,25 +43,44 @@ button {
     cursor: pointer !important;
     width: 100%;
     padding: 12px;
-    margin: 8px 0;
+    margin: 7px 0;
     background: #1a73e8;
     color: white;
-    font-weight: bold;
     border: none;
     border-radius: 10px;
     font-size: 16px;
+    font-weight: bold;
 }
 
 button:hover {
     background: #155ab6;
 }
 
-/* Log */
 #log {
     background: #eee;
     padding: 12px;
     border-radius: 8px;
     margin-top: 10px;
-    font-size: 14px;
     white-space: pre-line;
+}
+
+/* Animasi success */
+@keyframes successPop {
+    0% { opacity: 0; transform: scale(0.5); }
+    60% { opacity: 1; transform: scale(1.05); }
+    100% { opacity: 1; transform: scale(1); }
+}
+
+@keyframes successFadeOut {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+
+.success {
+    color: #0da60b;
+    font-weight: bold;
+    font-size: 20px;
+    text-align: center;
+    margin-top: 10px;
+    display: none;
 }
