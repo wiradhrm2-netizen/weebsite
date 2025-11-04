@@ -7,7 +7,7 @@
 <style>
 /* Reset & Font */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; position: relative; overflow-x: hidden; }
+body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; position: relative; overflow-x: hidden; padding-bottom: 50px; }
 /* Loading Screen */
 #loadingAOS { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 9999; transition: opacity 0.5s ease; }
 .loader-circle { width: 70px; height: 70px; border: 6px solid #c9d6ff; border-top: 6px solid #346dff; border-radius: 50%; animation: spin 1s linear infinite; }
@@ -37,6 +37,13 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 /* Overlay */
 .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s ease; z-index: 9999; }
 .overlay.active { opacity: 1; visibility: visible; }
+/* Tabel Absensi */
+.absensi-table { border:4px solid #FFD700; border-radius:10px; overflow:hidden; width:100%; max-width:700px; margin:30px auto; }
+.absensi-table table { width:100%; border-collapse:collapse; }
+.absensi-table th { background:#FFD700; color:#1a2b5f; padding:12px; }
+.absensi-table td { padding:10px; }
+.absensi-table tr:nth-child(even) td { background:#f0f0f0; }
+.absensi-table tr:nth-child(odd) td { background:#fff; }
 /* Responsive */
 @media (max-width: 600px) { .section h1 { font-size: 2rem; } .section h2 { font-size: 1.5rem; } }
 </style>
@@ -64,6 +71,25 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
     <h1>AOS — Absensi Online Siswa</h1>
     <p>Silahkan pilih untuk masuk ke halaman absensi.</p>
     <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke Absensi</button>
+
+    <!-- Tabel Absensi -->
+    <div class="absensi-table">
+    <table id="tabelAbsensi">
+        <thead>
+            <tr>
+                <th>Tanggal</th>
+                <th>NIS</th>
+                <th>Nama</th>
+                <th>Kelas</th>
+                <th>Status</th>
+                <th>Keterangan</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Data absensi muncul di sini -->
+        </tbody>
+    </table>
+    </div>
 </div>
 <!-- Section: Tentang AOS -->
 <div class="section" id="tentang">
@@ -83,8 +109,10 @@ window.onload = () => {
         loading.style.opacity = '0';
         loading.style.pointerEvents = 'none';
         setTimeout(() => loading.style.display = 'none', 500);
+        loadAbsensi(); // Load tabel saat landing page tampil
     }, 1200);
 };
+
 // Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburgerMenu');
 const sidebar = document.getElementById('sidebarMenu');
@@ -123,6 +151,25 @@ document.querySelectorAll('.btn-back').forEach(btn => {
         document.getElementById('home').classList.add('active');
     });
 });
+
+// ===== Fungsi Load Data Absensi dari localStorage =====
+function loadAbsensi() {
+    const data = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
+    const tbody = document.getElementById("tabelAbsensi").querySelector("tbody");
+    tbody.innerHTML = "";
+    data.forEach(item => {
+        const row = document.createElement("tr");
+        row.innerHTML = `
+            <td>${item.tanggal}</td>
+            <td>${item.nis}</td>
+            <td>${item.nama}</td>
+            <td>${item.kelas}</td>
+            <td>${item.status}</td>
+            <td>${item.ket || "-"}</td>
+        `;
+        tbody.appendChild(row);
+    });
+}
 </script>
 </body>
 </html>
