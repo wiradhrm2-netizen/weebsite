@@ -141,18 +141,29 @@ function kunciForm() {
     document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ===== SCAN QR ===== */
+/* ===== SCAN QR (TAMBAHAN: KAMERA BELAKANG + VALIDASI) ===== */
 const reader = new Html5Qrcode("reader");
 Html5Qrcode.getCameras().then(cameras => {
     if (cameras.length > 0) {
+        // Pilih kamera belakang jika tersedia
+        let backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")) || cameras[0];
+
         reader.start(
-            cameras[0].id,
+            backCamera.id,
             { fps: 10, qrbox: 250 },
             qr => {
                 if (sudahAbsen) return;
 
+                // Validasi QR kosong
                 if (!qr || qr.trim() === "") {
                     showNotif("⚠️ QR kosong, silahkan scan ulang");
+                    return;
+                }
+
+                // Validasi format QR minimal: NIS|Nama|Kelas
+                const parts = qr.split('|');
+                if (parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()) {
+                    showNotif("⚠️ QR tidak valid, silahkan scan ulang");
                     return;
                 }
 
@@ -162,12 +173,11 @@ Html5Qrcode.getCameras().then(cameras => {
 
                 // Tambah data ke localStorage
                 const tanggal = new Date().toLocaleDateString();
-                const parts = qr.split('|'); 
-                const nisQR = parts[0] || "N/A";
-                const namaQR = parts[1] || "N/A";
-                const kelasQR = parts[2] || "N/A";
-                const statusQR = parts[3] || "Hadir";
-                const ketQR = parts[4] || "";
+                const nisQR = parts[0].trim();
+                const namaQR = parts[1].trim();
+                const kelasQR = parts[2].trim();
+                const statusQR = parts[3]?.trim() || "Hadir";
+                const ketQR = parts[4]?.trim() || "";
 
                 let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
                 dataAbsensi.push({ tanggal, nis: nisQR, nama: namaQR, kelas: kelasQR, status: statusQR, ket: ketQR });
@@ -179,6 +189,11 @@ Html5Qrcode.getCameras().then(cameras => {
         );
     }
 });
+
+/* ===== Default value form manual (TAMBAHAN) ===== */
+document.getElementById("manualId").value = "12345";
+document.getElementById("manualNama").value = "Aku Hebat";
+document.getElementById("manualKelas").value = "11";
 
 /* ===== KIRIM MANUAL ===== */
 document.getElementById("kirimManual").onclick = () => {
