@@ -3,32 +3,28 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Absensi Kelas</title>
-    <link rel="stylesheet" href="style.css" />
+    <title>Absensi Siswa Premium</title>
 
-    <!-- Instascan -->
-    <script src="https://rawgit.com/schmich/instascan-builds/master/instascan.min.js"></script>
+    <!-- CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- QR Scanner -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
 </head>
 <body>
-<div class="container">
-    <h1>Absensi Kelas</h1>
 
-    <!-- Scan QR -->
+<div class="card">
+    <h1>Absensi Siswa Premium</h1>
+
     <h2>Scan QR</h2>
-    <video id="preview"></video>
-    <p id="scanResult">Belum ada hasil scan.</p>
+    <div id="reader"></div>
+    <p id="scanStatus" class="scan-info">Mengaktifkan kamera...</p>
 
-    <button id="stopScan">Stop Scan</button>
-    <button id="backBtn">Back</button>
-
-    <hr />
-
-    <!-- Isi Manual -->
     <h2>Isi Manual</h2>
 
-    <input id="manualId" placeholder="NIS" />
-    <input id="manualNama" placeholder="Nama" />
-    <input id="manualKelas" placeholder="Kelas" />
+    <input id="manualId" placeholder="NIS" autocomplete="off" />
+    <input id="manualNama" placeholder="Nama Lengkap" />
+    <input id="manualKelas" placeholder="Kelas (misal 8A)" />
 
     <select id="manualStatus">
         <option value="Hadir">Hadir</option>
@@ -38,18 +34,13 @@
 
     <input id="manualKet" placeholder="Keterangan (opsional)" />
 
-    <button id="kirimManual">Kirim Absensi</button>
+    <button id="kirimManual">Kirim Absen</button>
+    <button id="backBtn" class="back">Kembali</button>
 
-    <!-- Pesan berhasil + animasi -->
-    <p id="successMessage" class="success"></p>
-
-    <h3>Absensi Siswa</h3>
-    <div id="log"></div>
+    <div class="success" id="successMsg">✅ Absensi Berhasil</div>
 </div>
 
-<!-- Suara beep -->
-<audio id="beepSound" src="https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg"></audio>
-
+<!-- JS -->
 <script src="script.js"></script>
 </body>
 </html>
