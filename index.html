@@ -1,44 +1,46 @@
 <!-- ===================== -->
-<!--  index.html (Landing Page) -->
+<!-- index.html (Landing Page AOS + Sidebar Menu Tentang AOS) -->
 <!-- ===================== -->
 <!DOCTYPE html>
 <html lang="id">
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Selamat Datang</title>
-<link rel="stylesheet" href="style.css" />
+<title>Selamat Datang | AOS</title>
+
 <style>
-/* Loading AOS */
+/* ===================== */
+/* Reset & Font */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: #f9faff;
+    color: #1a2b5f;
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* ===================== */
+/* Loading Screen */
 #loadingAOS {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255,255,255,0.9);
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(255,255,255,0.95);
+    display: flex; justify-content: center; align-items: center;
     flex-direction: column;
     z-index: 9999;
-    font-family: 'Poppins', sans-serif;
-    animation: fadeIn 0.3s ease;
+    transition: opacity 0.5s ease;
 }
 
 .loader-circle {
-    width: 70px;
-    height: 70px;
+    width: 70px; height: 70px;
     border: 6px solid #c9d6ff;
     border-top: 6px solid #346dff;
     border-radius: 50%;
     animation: spin 1s linear infinite;
 }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
 .loading-text {
     margin-top: 15px;
@@ -47,49 +49,175 @@
     color: #1a2b5f;
     letter-spacing: 1px;
 }
-/* Logo di tengah layar */
+
+/* ===================== */
+/* Logo */
 .logo {
-    width: 120px; /* Ukuran pas & minimalis */
+    width: 120px;
     height: auto;
     margin-bottom: 30px;
     opacity: 0;
     animation: logoFade 1s ease forwards;
-    /* Pusatkan logo di loading screen */
     display: block;
+    filter: drop-shadow(0 4px 8px rgba(52, 109, 255, 0.4));
 }
 
-/* Animasi fade-in logo */
 @keyframes logoFade {
     0% { opacity: 0; transform: translateY(-20px); }
     100% { opacity: 1; transform: translateY(0); }
 }
 
+/* ===================== */
+/* Landing Page */
+.landing {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    justify-content: center; align-items: center;
+    text-align: center; padding: 20px;
+}
 
+.landing-title { font-size: 2.5rem; font-weight: 700; margin-bottom: 15px; }
+.landing-sub { font-size: 1.2rem; color: #555; margin-bottom: 30px; }
+
+/* ===================== */
+/* Button */
+.btn-primary {
+    background: #346dff; color: #fff;
+    border: none; padding: 15px 35px;
+    font-size: 1rem; border-radius: 10px;
+    cursor: pointer; transition: all 0.3s ease;
+    box-shadow: 0 5px 15px rgba(52,109,255,0.2);
+}
+
+.btn-primary:hover { background: #1a52d1; transform: translateY(-2px); }
+
+/* ===================== */
+/* Hamburger Menu */
+.hamburger {
+    position: fixed; top: 20px; right: 20px;
+    width: 35px; height: 30px;
+    display: flex; flex-direction: column;
+    justify-content: space-between;
+    cursor: pointer; z-index: 10001;
+}
+
+.hamburger span {
+    display: block; height: 4px;
+    background: #346dff; border-radius: 2px;
+    transition: all 0.3s ease;
+}
+
+.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+.hamburger.active span:nth-child(2) { opacity: 0; }
+.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
+
+/* ===================== */
+/* Sidebar Menu */
+.sidebar {
+    position: fixed; top: 0; right: -250px;
+    width: 250px; height: 100%;
+    background: #346dff; color: #fff;
+    padding: 60px 20px; display: flex;
+    flex-direction: column; gap: 20px;
+    transition: right 0.3s ease; z-index: 10000;
+}
+
+.sidebar a {
+    color: #fff; text-decoration: none;
+    font-size: 1.1rem; transition: color 0.2s ease;
+}
+
+.sidebar a:hover { color: #c9d6ff; }
+
+.sidebar.active { right: 0; }
+
+/* Overlay Background saat sidebar aktif */
+.overlay {
+    position: fixed; top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.4);
+    opacity: 0; visibility: hidden;
+    transition: opacity 0.3s ease;
+    z-index: 9999;
+}
+
+.overlay.active {
+    opacity: 1; visibility: visible;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .landing-title { font-size: 2rem; }
+    .landing-sub { font-size: 1rem; }
+    .btn-primary { padding: 12px 25px; font-size: 0.95rem; }
+    .sidebar { width: 200px; padding: 50px 15px; }
+}
 </style>
 </head>
 <body>
-<img class="logo" src="AOS_logo.png" />
+
+<!-- Hamburger Menu -->
+<div class="hamburger" id="hamburgerMenu">
+    <span></span><span></span><span></span>
+</div>
+
+<!-- Sidebar Menu -->
+<div class="sidebar" id="sidebarMenu">
+    <a href="#">Beranda</a>
+    <a href="#">Tentang AOS</a>
+    <a href="#">Cara Menggunakan</a>
+    <a href="absensi.html">Absensi</a>
+    <a href="#">Kontak / Bantuan</a>
+</div>
+
+<!-- Overlay -->
+<div class="overlay" id="overlay"></div>
+
+<!-- Logo -->
+<img class="logo" src="AOS_logo.png" alt="Logo AOS" />
+
+<!-- Loading Screen -->
 <div id="loadingAOS">
     <div class="loader-circle"></div>
     <div class="loading-text">AOS Loading...</div>
 </div>
 
+<!-- Landing Page Content -->
 <div class="landing">
     <h1 class="landing-title">AOS — Absensi Online Siswa</h1>
     <p class="landing-sub">Silahkan pilih untuk masuk ke halaman absensi</p>
-
-    <button onclick="location.href='absensi.html'" class="btn-primary big">Masuk ke AOS — Absensi Online Siswa</button>
+    <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke AOS — Absensi Online Siswa</button>
 </div>
 
 <script>
-// Loading screen animasi
+// Loading Screen
 window.onload = () => {
     setTimeout(() => {
-        document.getElementById('loadingAOS').style.opacity = '0';
-        setTimeout(() => document.getElementById('loadingAOS').style.display = 'none', 500);
+        const loading = document.getElementById('loadingAOS');
+        loading.style.opacity = '0';
+        loading.style.pointerEvents = 'none';
+        setTimeout(() => loading.style.display = 'none', 500);
     }, 1200);
 };
+
+// Hamburger Menu & Sidebar Toggle
+const hamburger = document.getElementById('hamburgerMenu');
+const sidebar = document.getElementById('sidebarMenu');
+const overlay = document.getElementById('overlay');
+
+hamburger.addEventListener('click', () => {
+    hamburger.classList.toggle('active');
+    sidebar.classList.toggle('active');
+    overlay.classList.toggle('active');
+});
+
+// Tutup sidebar saat klik overlay
+overlay.addEventListener('click', () => {
+    hamburger.classList.remove('active');
+    sidebar.classList.remove('active');
+    overlay.classList.remove('active');
+});
 </script>
+
 </body>
 </html>
-
