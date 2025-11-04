@@ -7,243 +7,74 @@
 <style>
 /* Reset & Font */
 * { margin: 0; padding: 0; box-sizing: border-box; }
-body {
-    font-family: 'Poppins', sans-serif;
-    background: #f9faff;
-    color: #1a2b5f;
-    position: relative;
-    overflow-x: hidden;
-}
-
+body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; position: relative; overflow-x: hidden; }
 /* Loading Screen */
-#loadingAOS {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(255,255,255,0.95);
-    display: flex; justify-content: center; align-items: center;
-    flex-direction: column;
-    z-index: 9999;
-    transition: opacity 0.5s ease;
-}
-
-.loader-circle {
-    width: 70px; height: 70px;
-    border: 6px solid #c9d6ff;
-    border-top: 6px solid #346dff;
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
+#loadingAOS { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 9999; transition: opacity 0.5s ease; }
+.loader-circle { width: 70px; height: 70px; border: 6px solid #c9d6ff; border-top: 6px solid #346dff; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-.loading-text {
-    margin-top: 15px;
-    font-size: 18px;
-    font-weight: 600;
-    color: #1a2b5f;
-    letter-spacing: 1px;
-}
-
+.loading-text { margin-top: 15px; font-size: 18px; font-weight: 600; color: #1a2b5f; letter-spacing: 1px; }
 /* Logo */
-.logo {
-    width: 120px;
-    height: auto;
-    margin-bottom: 30px;
-    display: block;
-}
-
+.logo { width: 120px; height: auto; margin-bottom: 30px; display: block; }
 /* Sections */
-.section {
-    min-height: 100vh;
-    display: none;
-    flex-direction: column;
-    justify-content: center; align-items: center;
-    text-align: center; padding: 20px;
-}
-
+.section { min-height: 100vh; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
 .section.active { display: flex; }
-
 .section h1, .section h2 { color: #346dff; margin-bottom: 15px; }
 .section p { font-size: 1rem; color: #1a2b5f; margin-bottom: 20px; max-width: 800px; }
-
 /* Button */
-.btn-primary, .btn-back {
-    display: inline-block;
-    background: #346dff; color: #fff;
-    border: none; padding: 12px 30px;
-    border-radius: 8px; cursor: pointer;
-    font-weight: 600; text-decoration: none;
-    transition: all 0.3s ease;
-}
-
+.btn-primary, .btn-back { display: inline-block; background: #346dff; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s ease; }
 .btn-primary:hover, .btn-back:hover { background: #1a52d1; }
-
 /* Hamburger Menu */
-.hamburger {
-    position: fixed; top: 20px; right: 20px;
-    width: 35px; height: 30px;
-    display: flex; flex-direction: column;
-    justify-content: space-between; cursor: pointer; z-index: 10001;
-}
-
-.hamburger span {
-    display: block; height: 4px;
-    background: #346dff; border-radius: 2px;
-    transition: all 0.3s ease;
-}
-
+.hamburger { position: fixed; top: 20px; right: 20px; width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 10001; }
+.hamburger span { display: block; height: 4px; background: #346dff; border-radius: 2px; transition: all 0.3s ease; }
 .hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
 .hamburger.active span:nth-child(2) { opacity: 0; }
 .hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
-
 /* Sidebar Menu */
-.sidebar {
-    position: fixed; top: 0; right: -250px;
-    width: 250px; height: 100%;
-    background: #346dff; color: #fff;
-    padding: 60px 20px; display: flex;
-    flex-direction: column; gap: 20px;
-    transition: right 0.3s ease; z-index: 10000;
-}
-
-.sidebar a {
-    color: #fff; text-decoration: none;
-    font-size: 1.1rem; transition: color 0.2s ease;
-}
-
+.sidebar { position: fixed; top: 0; right: -250px; width: 250px; height: 100%; background: #346dff; color: #fff; padding: 60px 20px; display: flex; flex-direction: column; gap: 20px; transition: right 0.3s ease; z-index: 10000; }
+.sidebar a { color: #fff; text-decoration: none; font-size: 1.1rem; transition: color 0.2s ease; }
 .sidebar a:hover { color: #c9d6ff; }
 .sidebar.active { right: 0; }
-
 /* Overlay */
-.overlay {
-    position: fixed; top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(0,0,0,0.4);
-    opacity: 0; visibility: hidden;
-    transition: opacity 0.3s ease;
-    z-index: 9999;
-}
-
+.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s ease; z-index: 9999; }
 .overlay.active { opacity: 1; visibility: visible; }
-
-/* Tabel Absensi Premium */
-table {
-    width:100%;
-    border-collapse: collapse;
-    margin-top: 15px;
-    border: 3px solid #FFD700;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #fff;
-}
-th, td {
-    padding:12px;
-    text-align:center;
-    border-right: 2px solid #FFD700;
-}
-th:last-child, td:last-child { border-right: none; }
-th {
-    background:#FFD700;
-    color:#000;
-}
-tr:nth-child(even){background:#f9f9f9;}
-
 /* Responsive */
-@media (max-width: 600px) {
-    .section h1 { font-size: 2rem; }
-    .section h2 { font-size: 1.5rem; }
-}
+@media (max-width: 600px) { .section h1 { font-size: 2rem; } .section h2 { font-size: 1.5rem; } }
 </style>
 </head>
 <body>
-
 <!-- Hamburger Menu -->
 <div class="hamburger" id="hamburgerMenu">
     <span></span><span></span><span></span>
 </div>
-
 <!-- Sidebar Menu -->
 <div class="sidebar" id="sidebarMenu">
     <a href="#" data-section="tentang">Tentang AOS</a>
 </div>
-
 <!-- Overlay -->
 <div class="overlay" id="overlay"></div>
-
 <!-- Logo -->
 <img class="logo" src="AOS_logo.png" alt="Logo AOS" />
-
 <!-- Loading Screen -->
 <div id="loadingAOS">
     <div class="loader-circle"></div>
     <div class="loading-text">AOS Loading...</div>
 </div>
-
 <!-- Section: Beranda -->
 <div class="section active" id="home">
     <h1>AOS — Absensi Online Siswa</h1>
     <p>Silahkan pilih untuk masuk ke halaman absensi.</p>
     <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke Absensi</button>
-
-    <!-- ===== Tabel Premium Terintegrasi ===== -->
-    <h2 style="margin-top:30px;">Contoh Daftar Absensi</h2>
-    <table>
-        <thead>
-            <tr>
-                <th>No</th>
-                <th>NIS</th>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>1</td>
-                <td>12345</td>
-                <td>Budi Santoso</td>
-                <td>8A</td>
-                <td>Hadir</td>
-            </tr>
-            <tr>
-                <td>2</td>
-                <td>12346</td>
-                <td>Siti Aminah</td>
-                <td>8B</td>
-                <td>Izin</td>
-            </tr>
-            <tr>
-                <td>3</td>
-                <td>12347</td>
-                <td>Andi Prasetyo</td>
-                <td>8C</td>
-                <td>Hadir</td>
-            </tr>
-        </tbody>
-    </table>
 </div>
-
 <!-- Section: Tentang AOS -->
 <div class="section" id="tentang">
     <h2>Apa itu AOS?</h2>
-    <p>AOS (Absensi Online Siswa) adalah sistem absensi berbasis web untuk memudahkan sekolah
-    dalam mencatat kehadiran siswa secara digital. Proses absensi menjadi cepat, akurat,
-    dan ramah lingkungan karena mengurangi penggunaan kertas.</p>
-
+    <p>AOS (Absensi Online Siswa) adalah sistem absensi berbasis web untuk memudahkan sekolah dalam mencatat kehadiran siswa secara digital. Proses absensi menjadi cepat, akurat, dan ramah lingkungan karena mengurangi penggunaan kertas.</p>
     <h2>Fitur Utama AOS</h2>
-    <p>
-    1. Absensi QR Code<br>
-    2. Form Manual<br>
-    3. Laporan Real-Time<br>
-    4. Notifikasi Absensi
-    </p>
-
+    <p> 1. Absensi QR Code<br> 2. Form Manual<br> 3. Laporan Real-Time<br> 4. Notifikasi Absensi </p>
     <h2>Manfaat AOS</h2>
-    <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah
-    monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
-
+    <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
     <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
 </div>
-
 <script>
 // Loading Screen
 window.onload = () => {
@@ -254,26 +85,22 @@ window.onload = () => {
         setTimeout(() => loading.style.display = 'none', 500);
     }, 1200);
 };
-
 // Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburgerMenu');
 const sidebar = document.getElementById('sidebarMenu');
 const overlay = document.getElementById('overlay');
 const sections = document.querySelectorAll('.section');
-
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 });
-
 // Tutup sidebar saat klik overlay
 overlay.addEventListener('click', () => {
     hamburger.classList.remove('active');
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
 });
-
 // Menu navigasi sidebar
 sidebar.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (e) => {
@@ -282,14 +109,12 @@ sidebar.querySelectorAll('a').forEach(link => {
         sections.forEach(sec => sec.classList.remove('active'));
         const activeSection = document.getElementById(target);
         if(activeSection) activeSection.classList.add('active');
-
         // Tutup sidebar
         hamburger.classList.remove('active');
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
     });
 });
-
 // Tombol Kembali
 document.querySelectorAll('.btn-back').forEach(btn => {
     btn.addEventListener('click', (e) => {
@@ -299,6 +124,5 @@ document.querySelectorAll('.btn-back').forEach(btn => {
     });
 });
 </script>
-
 </body>
 </html>
