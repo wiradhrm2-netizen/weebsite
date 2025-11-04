@@ -1,102 +1,49 @@
-// ====================================
-// AUTO NYALAKAN KAMERA QR
-// ====================================
-let scanner = new Instascan.Scanner({
-    video: document.getElementById("preview"),
-    scanPeriod: 3,
-    mirror: false
-});
-
-window.onload = async () => {
-    try {
-        let cameras = await Instascan.Camera.getCameras();
-
-        if (cameras.length === 0) {
-            alert("Tidak ada kamera ditemukan!");
-            return;
-        }
-
-        let kameraBelakang =
-            cameras.find((cam) => cam.name.toLowerCase().includes("back")) ||
-            cameras[0];
-
-        scanner.start(kameraBelakang);
-    } catch (err) {
-        alert(
-            "Kamera gagal dinyalakan.\nPastikan izin kamera aktif & website HTTPS."
-        );
-        console.error(err);
-    }
-};
-
-// Scan QR berhasil
-scanner.addListener("scan", function (content) {
-    document.getElementById("scanResult").innerText =
-        "Hasil Scan: " + content;
-
-    addLog("Scan QR: " + content);
-
-    showSuccess(); // ✅ animasi + suara beep
-});
-
-// Tombol stop
-document.getElementById("stopScan").onclick = () => {
-    scanner.stop();
-};
-
-// Tombol Back
-document.getElementById("backBtn").onclick = () => {
-    window.history.back();
-};
-
-// ====================================
-// ISI MANUAL
-// ====================================
-document.getElementById("kirimManual").onclick = () => {
-    let data = {
-        nis: document.getElementById("manualId").value,
-        nama: document.getElementById("manualNama").value,
-        kelas: document.getElementById("manualKelas").value,
-        status: document.getElementById("manualStatus").value,
-        ket: document.getElementById("manualKet").value
-    };
-
-    addLog("Manual: " + JSON.stringify(data));
-
-    showSuccess(); // ✅ animasi + suara beep
-};
-
-// ====================================
-// SHOW SUCCESS + ANIMASI + SUARA
-// ====================================
-function playBeep() {
-    let audio = document.getElementById("beepSound");
-    audio.currentTime = 0;
-    audio.play();
-}
+let sudahAbsen = false;
+const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
 function showSuccess() {
-    playBeep();
-
-    let el = document.getElementById("successMessage");
-    el.innerText = "✅ Absen Berhasil";
-
-    el.style.display = "block";
-    el.style.animation = "successPop 0.4s ease-out";
-
-    setTimeout(() => {
-        el.style.animation = "successFadeOut 0.4s forwards";
-    }, 1800);
-
-    setTimeout(() => {
-        el.style.display = "none";
-        el.style.animation = "";
-    }, 2200);
+    const success = document.getElementById("successMsg");
+    success.style.display = "block";
+    beep.play();
 }
 
-// ====================================
-// LOG ABSENSI SISWA
-// ====================================
-function addLog(msg) {
-    document.getElementById("log").innerText += msg + "\n";
+function kunciForm() {
+    document.querySelectorAll("input, select, #kirimManual")
+        .forEach(el => el.disabled = true);
 }
+
+/* === SCAN QR === */
+const qrReader = new Html5Qrcode("reader");
+
+Html5Qrcode.getCameras().then(cameras => {
+    if (cameras.length > 0) {
+        qrReader.start(
+            cameras[0].id,
+            { fps: 10, qrbox: 250 },
+            qr => {
+                if (sudahAbsen) return;
+                sudahAbsen = true;
+
+                qrReader.stop();
+
+                document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+                showSuccess();
+                kunciForm();
+            }
+        );
+    }
+});
+
+/* === KIRIM MANUAL === */
+document.getElementById("kirimManual").onclick = () => {
+    if (sudahAbsen) return;
+
+    sudahAbsen = true;
+    showSuccess();
+    kunciForm();
+};
+
+/* === BACK === */
+document.getElementById("backBtn").onclick = () => {
+    location.reload();
+};
