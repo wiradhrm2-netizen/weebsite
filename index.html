@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Selamat Datang | AOS</title>
+<link rel="stylesheet" href="style.css" />
+<style>
+/* Loading AOS */
+#loadingAOS {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255,255,255,0.9);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    z-index: 9999;
+    font-family: 'Poppins', sans-serif;
+}
+
+.loader-circle {
+    width: 70px;
+    height: 70px;
+    border: 6px solid #c9d6ff;
+    border-top: 6px solid #346dff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+    margin-top: 15px;
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a2b5f;
+    letter-spacing: 1px;
+}
+
+.logo {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 70px;
+    opacity: 0;
+    animation: logoFade 1.2s ease forwards;
+    z-index: 999;
+}
+
+@keyframes logoFade {
+    0% { opacity: 0; transform: translateY(-10px); }
+    100% { opacity: 1; transform: translateY(0); }
+}
+
+.landing {
+    text-align: center;
+    margin-top: 120px;
+}
+
+.landing-title {
+    font-size: 32px;
+    font-weight: 700;
+    color: #1a2b5f;
+}
+
+.landing-sub {
+    font-size: 18px;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.btn-primary {
+    background-color: #346dff;
+    color: #fff;
+    border: none;
+    padding: 14px 28px;
+    font-size: 16px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+<div id="loadingAOS">
+    <div class="loader-circle"></div>
+    <div class="loading-text">AOS Loading...</div>
+</div>
+
+<img class="logo" src="AOS_logo.png" />
+
+<div class="landing">
+    <h1 class="landing-title">AOS — Absensi Online Siswa</h1>
+    <p class="landing-sub">Silahkan pilih untuk masuk ke halaman absensi</p>
+    <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke AOS — Absensi Siswa</button>
+</div>
+
+<script>
+window.onload = () => {
+    const loading = document.getElementById('loadingAOS');
+    setTimeout(() => {
+        loading.style.transition = "opacity 0.5s ease";
+        loading.style.opacity = '0';
+        setTimeout(() => loading.style.display = 'none', 500);
+    }, 1200);
+};
+</script>
+</body>
+</html>
