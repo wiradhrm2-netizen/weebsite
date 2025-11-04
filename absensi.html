@@ -113,8 +113,7 @@ const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_
 
 /* ===== Fungsi Kembali ke Landing Page ===== */
 function kembaliKeLanding() {
-    // Redirect ke landing page
-    window.location.href = "index.html"; // ganti sesuai nama landing page
+    window.location.href = "index.html"; // landing page
 }
 
 /* ===== Notifikasi Sukses ===== */
@@ -123,7 +122,6 @@ function showSuccess() {
     s.style.display = "block";
     beep.play();
 
-    // 2 detik lalu kembali ke landing page
     setTimeout(() => {
         s.style.display = "none";
         kembaliKeLanding();
@@ -161,6 +159,20 @@ Html5Qrcode.getCameras().then(cameras => {
                 sudahAbsen = true;
                 reader.stop();
                 document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+
+                // Tambah data ke localStorage
+                const tanggal = new Date().toLocaleDateString();
+                const parts = qr.split('|'); 
+                const nisQR = parts[0] || "N/A";
+                const namaQR = parts[1] || "N/A";
+                const kelasQR = parts[2] || "N/A";
+                const statusQR = parts[3] || "Hadir";
+                const ketQR = parts[4] || "";
+
+                let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
+                dataAbsensi.push({ tanggal, nis: nisQR, nama: namaQR, kelas: kelasQR, status: statusQR, ket: ketQR });
+                localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
+
                 showSuccess();
                 kunciForm();
             }
@@ -175,11 +187,19 @@ document.getElementById("kirimManual").onclick = () => {
     const nis = document.getElementById("manualId").value.trim();
     const nama = document.getElementById("manualNama").value.trim();
     const kelas = document.getElementById("manualKelas").value.trim();
+    const status = document.getElementById("manualStatus").value;
+    const ket = document.getElementById("manualKet").value.trim();
+    const tanggal = new Date().toLocaleDateString();
 
     if (!nis || !nama || !kelas) {
         showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu");
         return;
     }
+
+    // Tambah data ke localStorage
+    let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
+    dataAbsensi.push({ tanggal, nis, nama, kelas, status, ket });
+    localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
 
     sudahAbsen = true;
     showSuccess();
@@ -188,8 +208,7 @@ document.getElementById("kirimManual").onclick = () => {
 
 /* ===== BACK BUTTON ===== */
 document.getElementById("backBtn").onclick = () => {
-    // Jika ingin kembali tanpa redirect bisa pakai:
-    window.location.href = "index.html"; // langsung ke landing page
+    window.location.href = "index.html"; 
 };
 </script>
 </body>
