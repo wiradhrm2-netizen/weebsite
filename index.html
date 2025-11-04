@@ -49,22 +49,21 @@
 }
 /* Logo di atas tombol */
 
+/* Logo di atas tombol dengan tata letak minimalis */
 .logo {
-    width: 120px; /* Ukuran pas & minimalis */
+    width: 70px;           /* Ukuran pas & minimalis */
     height: auto;
-    margin-bottom: 20px;
-    opacity: 0;
-    animation: logoFade 1s ease forwards;
-    /* Pusatkan logo di loading screen */
+    margin: 15px 0;        /* Jarak antara logo dan tombol */
     display: block;
+    opacity: 0;
+    animation: fadeInLogo 1s ease forwards;
+    animation-delay: 0.5s; /* muncul setelah loading selesai */
 }
 
-/* Animasi fade-in logo */
-@keyframes logoFade {
-    0% { opacity: 0; transform: translateY(-20px); }
+/* Animasi fade-in */
+@keyframes fadeInLogo {
+    0% { opacity: 0; transform: translateY(-10px); }
     100% { opacity: 1; transform: translateY(0); }
-}
-
 
 </style>
 </head>
