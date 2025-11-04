@@ -141,15 +141,15 @@ function kunciForm() {
     document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ===== SCAN QR (TAMBAHAN: KAMERA BELAKANG + VALIDASI) ===== */
+/* ===== SCAN QR ===== */
 const reader = new Html5Qrcode("reader");
 Html5Qrcode.getCameras().then(cameras => {
     if (cameras.length > 0) {
-        // Pilih kamera belakang jika tersedia
+        // TAMBAHAN: paksa kamera belakang jika ada
         let backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")) || cameras[0];
 
         reader.start(
-            backCamera.id,
+            { deviceId: { exact: backCamera.id }, facingMode: { exact: "environment" } }, // kamera belakang
             { fps: 10, qrbox: 250 },
             qr => {
                 if (sudahAbsen) return;
@@ -160,7 +160,7 @@ Html5Qrcode.getCameras().then(cameras => {
                     return;
                 }
 
-                // Validasi format QR minimal: NIS|Nama|Kelas
+                // Validasi format minimal: NIS|Nama|Kelas
                 const parts = qr.split('|');
                 if (parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()) {
                     showNotif("⚠️ QR tidak valid, silahkan scan ulang");
