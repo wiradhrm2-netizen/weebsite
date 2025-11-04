@@ -6,16 +6,79 @@
 <title>Absensi Siswa</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="style.css">
 <style>
-body { font-family: 'Poppins', sans-serif; background:#f5f6fa; display:flex; justify-content:center; padding:20px; }
-.card { background:#fff; padding:25px 35px; border-radius:15px; box-shadow:0 8px 20px rgba(0,0,0,0.1); width:100%; max-width:450px; }
-input, select, button { width:100%; margin:7px 0; padding:10px; border-radius:8px; border:1px solid #ccc; font-size:14px; }
-button { cursor:pointer; border:none; font-weight:600; }
+/* ===== Premium Card Style ===== */
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7ff, #e0ebff);
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+.card {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+}
+input, select, button {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    border:1px solid #ccc;
+    font-size: 15px;
+}
+button {
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
 button#kirimManual { background:#346dff; color:#fff; }
+button#kirimManual:hover { background:#1a52d1; }
 button#backBtn { background:#999; color:#fff; }
-.success { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:#fff; padding:15px 30px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; font-weight:600; text-align:center; }
-.notif { position:fixed; bottom:25px; left:50%; transform:translateX(-50%) scale(0.8); background:rgba(255,80,80,0.95); color:#fff; padding:14px 22px; border-radius:14px; font-size:15px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.15); opacity:0; transition:0.35s; pointer-events:none; text-align:center; }
-.notif.show { opacity:1; transform:translateX(-50%) scale(1); }
+button#backBtn:hover { background:#666; }
+
+/* ===== Notifikasi ===== */
+.success {
+    display:none;
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#4caf50;
+    color:#fff;
+    padding:15px 30px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    z-index:1000;
+    font-weight:600;
+    text-align:center;
+}
+.notif {
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%) scale(0.8);
+    background:rgba(255,80,80,0.95);
+    color:#fff;
+    padding:14px 22px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:600;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    opacity:0;
+    transition:0.35s;
+    pointer-events:none;
+    text-align:center;
+}
+.notif.show {
+    opacity:1;
+    transform:translateX(-50%) scale(1);
+}
 </style>
 </head>
 <body>
@@ -48,27 +111,26 @@ button#backBtn { background:#999; color:#fff; }
 let sudahAbsen = false;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-/* === SHOW NOTIFIKASI SUKSES === */
+/* ===== Fungsi Kembali ke Landing Page ===== */
+function kembaliKeLanding() {
+    // Redirect ke landing page
+    window.location.href = "index.html"; // ganti sesuai nama landing page
+}
+
+/* ===== Notifikasi Sukses ===== */
 function showSuccess() {
     const s = document.getElementById("successMsg");
     s.style.display = "block";
     beep.play();
 
+    // 2 detik lalu kembali ke landing page
     setTimeout(() => {
         s.style.display = "none";
-        // Reset form & status agar bisa absensi lagi
-        document.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
-        document.getElementById("scanStatus").innerText = "Silahkan scan QR atau isi manual.";
-        sudahAbsen = false;
-        document.getElementById("manualId").value = "";
-        document.getElementById("manualNama").value = "";
-        document.getElementById("manualKelas").value = "";
-        document.getElementById("manualStatus").value = "Hadir";
-        document.getElementById("manualKet").value = "";
+        kembaliKeLanding();
     }, 2000);
 }
 
-/* === SHOW NOTIFIKASI ERROR === */
+/* ===== Notifikasi Error ===== */
 function showNotif(msg) {
     const n = document.getElementById("notif");
     n.innerText = msg;
@@ -76,12 +138,12 @@ function showNotif(msg) {
     setTimeout(() => n.classList.remove("show"), 2000);
 }
 
-/* === KUNCI FORM === */
+/* ===== Kunci Form ===== */
 function kunciForm() {
     document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
 }
 
-/* === SCAN QR === */
+/* ===== SCAN QR ===== */
 const reader = new Html5Qrcode("reader");
 Html5Qrcode.getCameras().then(cameras => {
     if (cameras.length > 0) {
@@ -106,7 +168,7 @@ Html5Qrcode.getCameras().then(cameras => {
     }
 });
 
-/* === KIRIM MANUAL === */
+/* ===== KIRIM MANUAL ===== */
 document.getElementById("kirimManual").onclick = () => {
     if (sudahAbsen) return;
 
@@ -124,18 +186,10 @@ document.getElementById("kirimManual").onclick = () => {
     kunciForm();
 };
 
-/* === BACK BUTTON === */
+/* ===== BACK BUTTON ===== */
 document.getElementById("backBtn").onclick = () => {
-    // Reset form & QR status
-    reader.stop().catch(() => {}); // hentikan kamera jika aktif
-    document.querySelectorAll("input, select, button").forEach(el => el.disabled = false);
-    document.getElementById("scanStatus").innerText = "Silahkan scan QR atau isi manual.";
-    document.getElementById("manualId").value = "";
-    document.getElementById("manualNama").value = "";
-    document.getElementById("manualKelas").value = "";
-    document.getElementById("manualStatus").value = "Hadir";
-    document.getElementById("manualKet").value = "";
-    sudahAbsen = false;
+    // Jika ingin kembali tanpa redirect bisa pakai:
+    window.location.href = "index.html"; // langsung ke landing page
 };
 </script>
 </body>
