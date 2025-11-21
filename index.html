@@ -49,6 +49,7 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 </style>
 </head>
 <body>
+
 <!-- Hamburger Menu -->
 <div class="hamburger" id="hamburgerMenu">
     <span></span><span></span><span></span>
@@ -59,13 +60,16 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 </div>
 <!-- Overlay -->
 <div class="overlay" id="overlay"></div>
+
 <!-- Logo -->
 <img class="logo" src="AOS_logo.png" alt="Logo AOS" />
+
 <!-- Loading Screen -->
 <div id="loadingAOS">
     <div class="loader-circle"></div>
     <div class="loading-text">AOS Loading...</div>
 </div>
+
 <!-- Section: Beranda -->
 <div class="section active" id="home">
     <h1>AOS — Absensi Online Siswa</h1>
@@ -74,23 +78,24 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 
     <!-- Tabel Absensi -->
     <div class="absensi-table">
-    <table id="tabelAbsensi">
-        <thead>
-            <tr>
-                <th>Tanggal</th>
-                <th>NIS</th>
-                <th>Nama</th>
-                <th>Kelas</th>
-                <th>Status</th>
-                <th>Keterangan</th>
-            </tr>
-        </thead>
-        <tbody>
-            <!-- Data absensi muncul di sini -->
-        </tbody>
-    </table>
+        <table id="tabelAbsensi">
+            <thead>
+                <tr>
+                    <th>Tanggal</th>
+                    <th>NIS</th>
+                    <th>Nama</th>
+                    <th>Kelas</th>
+                    <th>Status</th>
+                    <th>Keterangan</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Data absensi muncul di sini -->
+            </tbody>
+        </table>
     </div>
 </div>
+
 <!-- Section: Tentang AOS -->
 <div class="section" id="tentang">
     <h2>Apa itu AOS?</h2>
@@ -101,19 +106,26 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
     <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
     <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
 </div>
+
+<!-- Tambahan Notifikasi WA -->
+<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">
+    Absen berhasil, WA siap dikirim ke admin ✅
+</div>
+<div id="notif" style="display:block; color:red; margin:10px 0; font-weight:bold;"></div>
+
+<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-// Loading Screen
+// ===== Script Asli Loading + Hamburger + Tabel =====
 window.onload = () => {
     setTimeout(() => {
         const loading = document.getElementById('loadingAOS');
         loading.style.opacity = '0';
         loading.style.pointerEvents = 'none';
         setTimeout(() => loading.style.display = 'none', 500);
-        loadAbsensi(); // Load tabel saat landing page tampil
+        loadAbsensi();
     }, 1200);
 };
 
-// Hamburger Menu Toggle
 const hamburger = document.getElementById('hamburgerMenu');
 const sidebar = document.getElementById('sidebarMenu');
 const overlay = document.getElementById('overlay');
@@ -123,13 +135,11 @@ hamburger.addEventListener('click', () => {
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 });
-// Tutup sidebar saat klik overlay
 overlay.addEventListener('click', () => {
     hamburger.classList.remove('active');
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
 });
-// Menu navigasi sidebar
 sidebar.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -137,13 +147,11 @@ sidebar.querySelectorAll('a').forEach(link => {
         sections.forEach(sec => sec.classList.remove('active'));
         const activeSection = document.getElementById(target);
         if(activeSection) activeSection.classList.add('active');
-        // Tutup sidebar
         hamburger.classList.remove('active');
         sidebar.classList.remove('active');
         overlay.classList.remove('active');
     });
 });
-// Tombol Kembali
 document.querySelectorAll('.btn-back').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -151,8 +159,6 @@ document.querySelectorAll('.btn-back').forEach(btn => {
         document.getElementById('home').classList.add('active');
     });
 });
-
-// ===== Fungsi Load Data Absensi dari localStorage =====
 function loadAbsensi() {
     const data = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
     const tbody = document.getElementById("tabelAbsensi").querySelector("tbody");
@@ -170,6 +176,83 @@ function loadAbsensi() {
         tbody.appendChild(row);
     });
 }
+
+// ===== Tambahan WA Manual & QR Scan =====
+let sudahAbsen = false;
+const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+function showSuccessWA() {
+    const success = document.getElementById("successMsg");
+    if(success) success.style.display = "block";
+    beep.play();
+}
+function showNotif(msg) {
+    const n = document.getElementById("notif");
+    if(n){ n.innerText = msg; n.classList.add("show"); setTimeout(() => n.classList.remove("show"),2000);}
+}
+function kunciForm() {
+    document.querySelectorAll("input, select, #kirimManual").forEach(el => el.disabled=true);
+}
+function kirimWAmanual(nama, no_absen, nis, status, keterangan, tanggal){
+    const pesan = `ABSENSI SISWA
+Nama: ${nama}
+No Absen: ${no_absen}
+NIS: ${nis}
+Status: ${status}
+Keterangan: ${keterangan}
+Tanggal: ${tanggal}`;
+    const nomorAdmin = "081233310308".replace(/^0/,"62");
+    const url = `https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`;
+    window.open(url,"_blank");
+}
+
+/* QR Scan */
+const qrReader = new Html5Qrcode("reader");
+Html5Qrcode.getCameras().then(cameras=>{
+    if(cameras.length===0){ showNotif("⚠️ Kamera tidak ditemukan"); return;}
+    let backCamera = cameras.find(c=>c.label.toLowerCase().includes("back"))||cameras[0];
+    qrReader.start(backCamera.id,{fps:10,qrbox:250}, qr=>{
+        if(sudahAbsen) return;
+        if(!qr || qr.trim()===""){ showNotif("⚠️ QR kosong, silahkan scan ulang"); return;}
+        const parts = qr.split('|');
+        if(parts.length<3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()){
+            showNotif("⚠️ QR tidak valid, silahkan scan ulang");
+            return;
+        }
+        sudahAbsen=true;
+        qrReader.stop();
+        showSuccessWA();
+        kunciForm();
+        if(document.getElementById("scanStatus")) document.getElementById("scanStatus").innerText="QR Terdeteksi ✅";
+        kirimWAmanual(parts[1],parts[2],parts[0],"HADIR","-",new Date().toLocaleDateString());
+    });
+});
+
+/* Manual Form WA */
+const tombolManual = document.getElementById("kirimManual");
+if(tombolManual){
+    tombolManual.addEventListener("click", function(e){
+        e.preventDefault();
+        if(sudahAbsen) return;
+        const nis = document.getElementById("manualId").value.trim();
+        const nama = document.getElementById("manualNama").value.trim();
+        const no_absen = document.getElementById("manualKelas").value.trim();
+        const status = document.getElementById("manualStatus").value;
+        const ket = document.getElementById("manualKet").value.trim();
+        const tanggal = new Date().toLocaleDateString();
+        if(!nis || !nama || !no_absen){
+            showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu");
+            return;
+        }
+        sudahAbsen=true;
+        showSuccessWA();
+        kunciForm();
+        kirimWAmanual(nama,no_absen,nis,status,ket,tanggal);
+    });
+}
+
+/* Tombol back reload */
+document.getElementById("backBtn")?.addEventListener("click",()=>location.reload());
 </script>
+
 </body>
 </html>
