@@ -212,7 +212,7 @@ document.getElementById("kirimManual").onclick = () => {
     localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
 
     // Kirim WA otomatis
-    const waNomor = "6281233310308"; // nomor tujuan
+    const waNomor = "6281233310308"; // nomor tujuan WA yang benar
     const pesan = `${nama} | ${nis} | ${status} | ${ket || '-'} | 081233310308`;
     const waURL = `https://wa.me/${waNomor}?text=${encodeURIComponent(pesan)}`;
     window.open(waURL, "_blank");
