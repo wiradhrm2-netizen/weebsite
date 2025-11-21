@@ -7,7 +7,7 @@ const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_
 function kirimWA(pesan) {
     const nomor = "081233310308".replace(/^0/, "62"); 
     const url = `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
-    window.open(url, "_blank");
+    window.open(url, "_blank"); // WA pasti terbuka
 }
 
 /* ===== Notifikasi Sukses ===== */
@@ -83,7 +83,7 @@ Tanggal: ${new Date().toLocaleString()}`;
 
                 setTimeout(() => {
                     window.location.href = "index.html";
-                }, 500);
+                }, 1500); // Dibuat lebih lama agar WA sempat terbuka
             },
             () => {} 
         );
@@ -96,7 +96,9 @@ Tanggal: ${new Date().toLocaleString()}`;
    ================== KIRIM MANUAL =========================
    ========================================================= */
 
-document.getElementById("kirimManual").onclick = () => {
+document.getElementById("kirimManual").addEventListener("click", function (e) {
+    e.preventDefault(); // FORM TIDAK AKAN RELOAD
+
     if (sudahAbsen) return;
 
     const nis = document.getElementById("manualId").value.trim();
@@ -129,8 +131,8 @@ Tanggal: ${tanggal}`;
 
     setTimeout(() => {
         window.location.href = "index.html";
-    }, 500);
-};
+    }, 1500); // WA pasti sempat terbuka
+});
 
 /* =========================================================
    ====================== TOMBOL BACK ======================
