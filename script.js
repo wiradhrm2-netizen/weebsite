@@ -7,7 +7,7 @@ const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_
 function kirimWA(pesan) {
     const nomor = "081233310308".replace(/^0/, "62"); 
     const url = `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
-    window.open(url, "_blank"); // WA pasti terbuka
+    window.open(url, "_blank"); // WA siap dikirim
 }
 
 /* ===== Notifikasi Sukses ===== */
@@ -33,7 +33,6 @@ function kunciForm() {
 /* =========================================================
    ================= SCAN QR KAMERA BELAKANG ===============
    ========================================================= */
-
 const qrReader = new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras()
@@ -71,7 +70,7 @@ Html5Qrcode.getCameras()
                 showSuccess();
                 kunciForm();
 
-                /* ===== KIRIM WHATSAPP ===== */
+                // Buat pesan WA QR
                 const pesanQR = `ABSENSI QR
 NIS: ${parts[0]}
 Nama: ${parts[1]}
@@ -83,9 +82,9 @@ Tanggal: ${new Date().toLocaleString()}`;
 
                 setTimeout(() => {
                     window.location.href = "index.html";
-                }, 1500); // Dibuat lebih lama agar WA sempat terbuka
+                }, 1500);
             },
-            () => {} 
+            () => {}
         );
     })
     .catch(() => {
@@ -95,18 +94,17 @@ Tanggal: ${new Date().toLocaleString()}`;
 /* =========================================================
    ================== KIRIM MANUAL =========================
    ========================================================= */
-
-document.getElementById("kirimManual").addEventListener("click", function (e) {
-    e.preventDefault(); // FORM TIDAK AKAN RELOAD
+document.getElementById("kirimManual").addEventListener("click", function(e) {
+    e.preventDefault(); // mencegah form reload
 
     if (sudahAbsen) return;
 
     const nis = document.getElementById("manualId").value.trim();
     const nama = document.getElementById("manualNama").value.trim();
     const kelas = document.getElementById("manualKelas").value.trim();
-    const status = document.getElementById("manualStatus").value;
+    const status = document.getElementById("manualStatus").value; // HADIR / SAKIT / IJIN
     const ket = document.getElementById("manualKet").value.trim();
-    const tanggal = new Date().toLocaleString();
+    const tanggal = new Date().toLocaleDateString();
 
     if (!nis || !nama || !kelas) {
         showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu");
@@ -117,27 +115,27 @@ document.getElementById("kirimManual").addEventListener("click", function (e) {
     showSuccess();
     kunciForm();
 
-    /* ===== KIRIM WA ===== */
+    // Buat pesan WA manual
     const pesanManual =
-`ABSENSI MANUAL
-NIS: ${nis}
+`ABSENSI SISWA
 Nama: ${nama}
-Kelas: ${kelas}
+No Absen: ${kelas}
+NIS: ${nis}
 Status: ${status}
 Keterangan: ${ket}
 Tanggal: ${tanggal}`;
 
+    // Buka WA admin, siap dikirim
     kirimWA(pesanManual);
 
     setTimeout(() => {
         window.location.href = "index.html";
-    }, 1500); // WA pasti sempat terbuka
+    }, 1500);
 });
 
 /* =========================================================
    ====================== TOMBOL BACK ======================
    ========================================================= */
-
 document.getElementById("backBtn").onclick = () => {
     location.reload();
 };
