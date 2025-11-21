@@ -21,8 +21,8 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 .section h1, .section h2 { color: #346dff; margin-bottom: 15px; }
 .section p { font-size: 1rem; color: #1a2b5f; margin-bottom: 20px; max-width: 800px; }
 /* Button */
-.btn-primary, .btn-back { display: inline-block; background: #346dff; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s ease; }
-.btn-primary:hover, .btn-back:hover { background: #1a52d1; }
+.btn-primary, .btn-back, button { display: inline-block; background: #346dff; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s ease; margin:5px; }
+.btn-primary:hover, .btn-back:hover, button:hover { background: #1a52d1; }
 /* Hamburger Menu */
 .hamburger { position: fixed; top: 20px; right: 20px; width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 10001; }
 .hamburger span { display: block; height: 4px; background: #346dff; border-radius: 2px; transition: all 0.3s ease; }
@@ -101,25 +101,20 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
     <h2>Apa itu AOS?</h2>
     <p>AOS (Absensi Online Siswa) adalah sistem absensi berbasis web untuk memudahkan sekolah dalam mencatat kehadiran siswa secara digital. Proses absensi menjadi cepat, akurat, dan ramah lingkungan karena mengurangi penggunaan kertas.</p>
     <h2>Fitur Utama AOS</h2>
-    <p> 1. Absensi QR Code<br> 2. Form Manual<br> 3. Laporan Real-Time<br> 4. Notifikasi Absensi </p>
+    <p>1. Absensi QR Code<br>2. Form Manual<br>3. Laporan Real-Time<br>4. Notifikasi Absensi</p>
     <h2>Manfaat AOS</h2>
     <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
     <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
 </div>
 
-<!-- Notifikasi Tambahan -->
-<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">
-    Absen berhasil, WA siap dikirim ke admin ✅
-</div>
+<!-- Notifikasi & Tombol WA -->
+<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">Absen berhasil, WA siap dikirim ke admin ✅</div>
 <div id="notif" style="display:block; color:red; margin:10px 0; font-weight:bold;"></div>
-
-<!-- Tombol WA QR (baru, tersembunyi) -->
 <button id="kirimWAQR" style="display:none;">Kirim ke WA Admin</button>
 
-<!-- Script -->
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-// ===== Script Asli Loading + Hamburger + Tabel =====
+// ===== Loading + Hamburger + Tabel =====
 window.onload = () => {
     setTimeout(() => {
         const loading = document.getElementById('loadingAOS');
@@ -181,20 +176,20 @@ function loadAbsensi() {
     });
 }
 
-// ===== WA Manual & QR Scan dengan tombol =====
-let sudahAbsen = false;
-let qrData = null;
+// ===== WA Manual & QR =====
+let sudahAbsen=false;
+let qrData=null;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-function showSuccessWA(){ const s=document.getElementById("successMsg"); if(s) s.style.display="block"; beep.play();}
-function showNotif(msg){ const n=document.getElementById("notif"); if(n){ n.innerText=msg; n.classList.add("show"); setTimeout(()=>n.classList.remove("show"),2000);}}
+function showSuccessWA(){ document.getElementById("successMsg").style.display="block"; beep.play();}
+function showNotif(msg){ const n=document.getElementById("notif"); n.innerText=msg; setTimeout(()=>n.innerText="",2000);}
 function kunciForm(){ document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true);}
-function kirimWAmanual(nama,no_absen,nis,status,keterangan,tanggal){
+function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
     const pesan=`ABSENSI SISWA
 Nama: ${nama}
 No Absen: ${no_absen}
 NIS: ${nis}
 Status: ${status}
-Keterangan: ${keterangan}
+Keterangan: ${ket}
 Tanggal: ${tanggal}`;
     const nomorAdmin="081233310308".replace(/^0/,"62");
     const url=`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`;
@@ -245,6 +240,5 @@ document.getElementById("kirimManual")?.addEventListener("click",function(e){
 /* Tombol back reload */
 document.getElementById("backBtn")?.addEventListener("click",()=>location.reload());
 </script>
-
 </body>
 </html>
