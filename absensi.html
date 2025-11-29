@@ -123,33 +123,17 @@ input, select, #kirimWAQR { width:100%; margin:5px 0; padding:10px; border-radiu
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-window.onload=()=>{
-    setTimeout(()=>{document.getElementById('loadingAOS').style.display='none'; loadAbsensi();},1200);
-};
+window.onload=()=>{ setTimeout(()=>{document.getElementById('loadingAOS').style.display='none'; loadAbsensi();},1200); };
 
 const hamburger=document.getElementById('hamburgerMenu');
 const sidebar=document.getElementById('sidebarMenu');
 const overlay=document.getElementById('overlay');
 const sections=document.querySelectorAll('.section');
 
-hamburger.addEventListener('click',()=>{
-    hamburger.classList.toggle('active'); sidebar.classList.toggle('active'); overlay.classList.toggle('active');
-});
-overlay.addEventListener('click',()=>{
-    hamburger.classList.remove('active'); sidebar.classList.remove('active'); overlay.classList.remove('active');
-});
-sidebar.querySelectorAll('a').forEach(link=>{
-    link.addEventListener('click',e=>{
-        e.preventDefault();
-        const target=link.getAttribute('data-section');
-        sections.forEach(sec=>sec.classList.remove('active'));
-        document.getElementById(target).classList.add('active');
-        hamburger.classList.remove('active'); sidebar.classList.remove('active'); overlay.classList.remove('active');
-    });
-});
-document.querySelectorAll('.btn-back').forEach(btn=>{
-    btn.addEventListener('click',e=>{ e.preventDefault(); sections.forEach(sec=>sec.classList.remove('active')); document.getElementById('home').classList.add('active'); });
-});
+hamburger.addEventListener('click',()=>{ hamburger.classList.toggle('active'); sidebar.classList.toggle('active'); overlay.classList.toggle('active'); });
+overlay.addEventListener('click',()=>{ hamburger.classList.remove('active'); sidebar.classList.remove('active'); overlay.classList.remove('active'); });
+sidebar.querySelectorAll('a').forEach(link=>{ link.addEventListener('click',e=>{ e.preventDefault(); const target=link.getAttribute('data-section'); sections.forEach(sec=>sec.classList.remove('active')); document.getElementById(target).classList.add('active'); hamburger.classList.remove('active'); sidebar.classList.remove('active'); overlay.classList.remove('active'); }); });
+document.querySelectorAll('.btn-back').forEach(btn=>{ btn.addEventListener('click',e=>{ e.preventDefault(); sections.forEach(sec=>sec.classList.remove('active')); document.getElementById('home').classList.add('active'); }); });
 
 function loadAbsensi(){
     const data=JSON.parse(localStorage.getItem("absensiAOS")||"[]");
@@ -171,10 +155,13 @@ function showSuccess(){ const s=document.getElementById("successMsg"); s.style.d
 function showNotif(msg){ const n=document.getElementById("notif"); n.innerText=msg; n.classList.add("show"); setTimeout(()=>n.classList.remove("show"),2000);}
 function kunciForm(){ document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true); sudahAbsen=true; }
 
+// Copy ke clipboard untuk grup WA
 function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
     const pesan=`ABSENSI SISWA\nNama: ${nama}\nNo Absen: ${no_absen}\nNIS: ${nis}\nStatus: ${status}\nKeterangan: ${ket}\nTanggal: ${tanggal}`;
-    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1","_blank");
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`,"_blank");
+    navigator.clipboard.writeText(pesan).then(()=>{
+        alert("Teks absensi telah disalin ke clipboard. Silahkan buka Grup WA dan paste lalu kirim.");
+        window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1","_blank");
+    }).catch(()=>{ showNotif("⚠️ Gagal menyalin teks, coba manual"); });
 }
 
 /* QR Scanner */
