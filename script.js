@@ -47,7 +47,7 @@ Tanggal: ${tanggal}`;
         4. User tinggal tekan "Kirim"
     */
 
-    const url = `https://wa.me/?text=${encodeURIComponent(pesan + "\n\nGrup Absensi:\n" + groupInvite)}`;
+    const url = `https://wa.me/?text=${encodeURIComponent(pesan + "\n\nNjjl:\n" + groupInvite)}`;
 
     window.open(url, "_blank");
 }
