@@ -216,10 +216,8 @@ Tanggal: ${tanggal}`;
     // 1. Buka link grup (WA akan mengingat grup terakhir)
     window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1", "_blank");
 
-    // 2. Setelah grup terbuka → kirim text otomatis
-    setTimeout(()=>{
-        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
-    }, 1200);
+  // WA hanya bisa mengisi text, user memilih grupnya
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
 }
 
 /* QR Scan */
