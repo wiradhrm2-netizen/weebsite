@@ -103,7 +103,7 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
     <h2>Fitur Utama AOS</h2>
     <p>1. Absensi QR Code<br>2. Form Manual<br>3. Laporan Real-Time<br>4. Notifikasi Absensi</p>
     <h2>Manfaat AOS</h2>
-    <p>Meningkatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
+    <p>Meningatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
     <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
 </div>
 
@@ -202,7 +202,7 @@ function kunciForm(){
 }
 
 /* ============================
-   FUNGSI WA KE GRUP (DIGABUNG)
+   FUNGSI WA KE GRUP FINAL
    ============================ */
 function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
     const pesan = `ABSENSI SISWA
@@ -213,11 +213,13 @@ Status: ${status}
 Keterangan: ${ket}
 Tanggal: ${tanggal}`;
 
-    const linkGrup = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1?mode=hqrt3";
+    // 1. Buka link grup (WA akan mengingat grup terakhir)
+    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1", "_blank");
 
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&phone=&link=${encodeURIComponent(linkGrup)}`;
-
-    window.open(url, "_blank");
+    // 2. Setelah grup terbuka → kirim text otomatis
+    setTimeout(()=>{
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
+    }, 1200);
 }
 
 /* QR Scan */
