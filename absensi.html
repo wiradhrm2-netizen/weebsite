@@ -4,80 +4,18 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Absensi Siswa</title>
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 <script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="style.css">
 <style>
-/* ===== Premium Card Style ===== */
-body {
-    font-family: 'Poppins', sans-serif;
-    background: linear-gradient(135deg, #f5f7ff, #e0ebff);
-    display: flex;
-    justify-content: center;
-    padding: 30px;
-}
-.card {
-    background: #fff;
-    padding: 30px 40px;
-    border-radius: 20px;
-    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
-    width: 100%;
-    max-width: 500px;
-}
-input, select, button {
-    width: 100%;
-    margin: 10px 0;
-    padding: 12px;
-    border-radius: 10px;
-    border:1px solid #ccc;
-    font-size: 15px;
-}
-button {
-    cursor:pointer;
-    font-weight:600;
-    transition:0.3s;
-}
+body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#f5f7ff,#e0ebff); display:flex; justify-content:center; padding:30px; }
+.card { background:#fff; padding:30px 40px; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.1); width:100%; max-width:500px; }
+input, select, button { width:100%; margin:10px 0; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:15px; }
+button { cursor:pointer; font-weight:600; transition:0.3s; }
 button#kirimManual { background:#346dff; color:#fff; }
 button#kirimManual:hover { background:#1a52d1; }
-button#backBtn { background:#999; color:#fff; }
-button#backBtn:hover { background:#666; }
-
-/* ===== Notifikasi ===== */
-.success {
-    display:none;
-    position:fixed;
-    top:20px;
-    left:50%;
-    transform:translateX(-50%);
-    background:#4caf50;
-    color:#fff;
-    padding:15px 30px;
-    border-radius:10px;
-    box-shadow:0 5px 15px rgba(0,0,0,0.2);
-    z-index:1000;
-    font-weight:600;
-    text-align:center;
-}
-.notif {
-    position:fixed;
-    bottom:25px;
-    left:50%;
-    transform:translateX(-50%) scale(0.8);
-    background:rgba(255,80,80,0.95);
-    color:#fff;
-    padding:14px 22px;
-    border-radius:14px;
-    font-size:15px;
-    font-weight:600;
-    box-shadow:0 4px 15px rgba(0,0,0,0.15);
-    opacity:0;
-    transition:0.35s;
-    pointer-events:none;
-    text-align:center;
-}
-.notif.show {
-    opacity:1;
-    transform:translateX(-50%) scale(1);
-}
+.success { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:#fff; padding:15px 30px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; font-weight:600; text-align:center; }
+.notif { position:fixed; bottom:25px; left:50%; transform:translateX(-50%) scale(0.8); background:rgba(255,80,80,0.95); color:#fff; padding:14px 22px; border-radius:14px; font-size:15px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.15); opacity:0; transition:0.35s; pointer-events:none; text-align:center; }
+.notif.show { opacity:1; transform:translateX(-50%) scale(1); }
 </style>
 </head>
 <body>
@@ -91,7 +29,7 @@ button#backBtn:hover { background:#666; }
     <h2>Isi Manual</h2>
     <input id="manualId" placeholder="NIS" autocomplete="off" />
     <input id="manualNama" placeholder="Nama Lengkap" />
-    <input id="manualKelas" placeholder="Kelas (misal 8A)" />
+    <input id="manualKelas" placeholder="Kelas" />
     <select id="manualStatus">
         <option value="Hadir">Hadir</option>
         <option value="Izin">Izin</option>
@@ -100,96 +38,86 @@ button#backBtn:hover { background:#666; }
     <input id="manualKet" placeholder="Keterangan (opsional)" />
 
     <button id="kirimManual">Kirim Absen</button>
-    <button id="kirimWAQR" style="display:none;">Copy Teks untuk WA</button>
-    <button id="backBtn">Kembali</button>
 </div>
 
 <div id="successMsg" class="success">✅ Absensi Berhasil</div>
 <div id="notif" class="notif"></div>
 
 <script>
-let sudahAbsen = false;
-let qrData = null;
-const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
+let sudahAbsen=false;
+let qrData=null;
+const beep=new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-function showSuccess() {
-    const s = document.getElementById("successMsg");
-    s.style.display = "block";
+function showSuccess(){
+    const s=document.getElementById("successMsg");
+    s.style.display="block";
     beep.play();
-    setTimeout(() => s.style.display = "none", 2000);
+    setTimeout(()=>s.style.display="none",2000);
 }
-function showNotif(msg) {
-    const n = document.getElementById("notif");
-    n.innerText = msg;
+
+function showNotif(msg){
+    const n=document.getElementById("notif");
+    n.innerText=msg;
     n.classList.add("show");
-    setTimeout(() => n.classList.remove("show"), 2000);
+    setTimeout(()=>n.classList.remove("show"),2000);
 }
-function kunciForm() {
-    document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
-    sudahAbsen = true;
+
+function kunciForm(){
+    document.querySelectorAll("input, select, button#kirimManual").forEach(el=>el.disabled=true);
+    sudahAbsen=true;
+}
+
+/* Kirim pesan ke grup WA */
+function kirimKeGrupWA(nama,no_absen,nis,status,ket,tanggal){
+    const pesan=`ABSENSI SISWA
+Nama: ${nama}
+No Absen: ${no_absen}
+NIS: ${nis}
+Status: ${status}
+Keterangan: ${ket || "-"}
+Tanggal: ${tanggal}`;
+    
+    // Link grup WA
+    const grupWA="https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1";
+
+    // Open grup WA (user tinggal klik kirim)
+    window.open(`${grupWA}?text=${encodeURIComponent(pesan)}`,"_blank");
 }
 
 /* QR Scanner */
 const reader = new Html5Qrcode("reader");
-Html5Qrcode.getCameras().then(cameras => {
-    if(cameras.length > 0){
-        let backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")) || cameras[0];
-        reader.start(backCamera.id, { fps: 10, qrbox: 250 }, qr => {
+Html5Qrcode.getCameras().then(cameras=>{
+    if(cameras.length>0){
+        let backCamera=cameras.find(c=>c.label.toLowerCase().includes("back")||c.label.toLowerCase().includes("environment"))||cameras[0];
+        reader.start(backCamera.id,{fps:10,qrbox:250}, qr=>{
             if(sudahAbsen) return;
-            const parts = qr.split('|');
-            if(parts.length < 3){ showNotif("⚠️ QR tidak valid"); return; }
-            qrData = { nis: parts[0].trim(), nama: parts[1].trim(), no_absen: parts[2].trim() };
-            document.getElementById("manualId").value = qrData.nis;
-            document.getElementById("manualNama").value = qrData.nama;
-            document.getElementById("manualKelas").value = qrData.no_absen;
-            document.getElementById("kirimWAQR").style.display = "inline-block";
+            const parts=qr.split('|');
+            if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
+            qrData={nis:parts[0].trim(), nama:parts[1].trim(), no_absen:parts[2].trim()};
+            document.getElementById("manualId").value=qrData.nis;
+            document.getElementById("manualNama").value=qrData.nama;
+            document.getElementById("manualKelas").value=qrData.no_absen;
         });
     } else showNotif("⚠️ Kamera tidak ditemukan");
 });
 
 /* Tombol Kirim Manual */
-document.getElementById("kirimManual").addEventListener("click", () => {
+document.getElementById("kirimManual").addEventListener("click",()=>{
     if(sudahAbsen) return;
-    const nis = document.getElementById("manualId").value.trim();
-    const nama = document.getElementById("manualNama").value.trim();
-    const kelas = document.getElementById("manualKelas").value.trim();
-    const status = document.getElementById("manualStatus").value;
-    const ket = document.getElementById("manualKet").value.trim();
-    const tanggal = new Date().toLocaleDateString();
 
-    if(!nis || !nama || !kelas){ showNotif("⚠️ Silahkan isi semua form"); return; }
+    const nis=document.getElementById("manualId").value.trim();
+    const nama=document.getElementById("manualNama").value.trim();
+    const no_absen=document.getElementById("manualKelas").value.trim();
+    const status=document.getElementById("manualStatus").value;
+    const ket=document.getElementById("manualKet").value.trim();
+    const tanggal=new Date().toLocaleDateString();
 
-    // Simpan di localStorage
-    let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
-    dataAbsensi.push({ tanggal, nis, nama, kelas, status, ket });
-    localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
+    if(!nis||!nama||!no_absen){ showNotif("⚠️ Silahkan isi semua form"); return; }
 
-    // Copy teks WA
-    const pesan = `ABSENSI SISWA\nNama: ${nama}\nNo Absen: ${kelas}\nNIS: ${nis}\nStatus: ${status}\nKeterangan: ${ket || '-' }\nTanggal: ${tanggal}`;
-    navigator.clipboard.writeText(pesan).then(() => {
-        alert("Teks absensi telah dicopy! Silahkan paste di grup WA.");
-    });
-
-    showSuccess();
     kunciForm();
-});
-
-/* Tombol Copy QR */
-document.getElementById("kirimWAQR").addEventListener("click", () => {
-    if(!qrData) return;
-    const tanggal = new Date().toLocaleDateString();
-    const pesan = `ABSENSI SISWA\nNama: ${qrData.nama}\nNo Absen: ${qrData.no_absen}\nNIS: ${qrData.nis}\nStatus: Hadir\nKeterangan: -\nTanggal: ${tanggal}`;
-    navigator.clipboard.writeText(pesan).then(() => {
-        alert("Teks absensi telah dicopy! Silahkan paste di grup WA.");
-    });
     showSuccess();
-    kunciForm();
+    kirimKeGrupWA(nama,no_absen,nis,status,ket,tanggal);
 });
-
-/* Tombol Kembali */
-document.getElementById("backBtn").onclick = () => {
-    window.location.href = "index.html";
-};
 </script>
 </body>
 </html>
