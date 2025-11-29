@@ -23,8 +23,9 @@ function kunciForm() {
     document.querySelectorAll("input, select, #kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ===================== KIRIM WA KE GRUP (SUDAH DIGANTI) ===================== */
+/* ===================== KIRIM WA KE GRUP (BENAR) ===================== */
 function kirimWAmanual(nama, no_absen, nis, status, keterangan, tanggal) {
+
     const pesan = `ABSENSI SISWA
 Nama: ${nama}
 No Absen: ${no_absen}
@@ -33,19 +34,21 @@ Status: ${status}
 Keterangan: ${keterangan}
 Tanggal: ${tanggal}`;
 
-    const linkGrup = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1?mode=hqrt3";
+    // ID GRUP WA KAMU (INI YANG BISA MENGIRIM PESAN)
+    const groupID = "120363406596412899@g.us";
 
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&phone=&link=${encodeURIComponent(linkGrup)}`;
+    // Format resmi WhatsApp API untuk grup
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&to=${groupID}`;
 
     window.open(url, "_blank");
 }
-/* ========================================================================== */
+/* ===================================================================== */
 
 /* ================= SCAN QR ================= */
 const qrReader = new Html5Qrcode("reader");
 
 Html5Qrcode.getCameras().then(cameras => {
-    if(cameras.length === 0) {
+    if (cameras.length === 0) {
         showNotif("⚠️ Kamera tidak ditemukan");
         return;
     }
@@ -56,26 +59,26 @@ Html5Qrcode.getCameras().then(cameras => {
         backCamera.id,
         { fps: 10, qrbox: 250 },
         qr => {
-            if(sudahAbsen) return;
+            if (sudahAbsen) return;
 
-            if(!qr || qr.trim() === "") {
+            if (!qr || qr.trim() === "") {
                 showNotif("⚠️ QR kosong, silahkan scan ulang");
                 return;
             }
 
             const parts = qr.split('|');
-            if(parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()) {
+            if (parts.length < 3 || !parts[0].trim() || !parts[1].trim() || !parts[2].trim()) {
                 showNotif("⚠️ QR tidak valid, silahkan scan ulang");
                 return;
             }
 
             sudahAbsen = true;
             qrReader.stop();
-            if(document.getElementById("scanStatus")) document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+            if (document.getElementById("scanStatus")) document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
             showSuccess();
             kunciForm();
 
-            // Kirim manual WA → SEKARANG MASUK GRUP
+            // Kirim WA ke Grup (manual)
             kirimWAmanual(parts[1], parts[2], parts[0], "HADIR", "-", new Date().toLocaleDateString());
 
             setTimeout(() => {
@@ -86,9 +89,9 @@ Html5Qrcode.getCameras().then(cameras => {
 });
 
 /* ================= KIRIM MANUAL ================= */
-document.getElementById("kirimManual").addEventListener("click", function(e){
+document.getElementById("kirimManual").addEventListener("click", function (e) {
     e.preventDefault();
-    if(sudahAbsen) return;
+    if (sudahAbsen) return;
 
     const nis = document.getElementById("manualId").value.trim();
     const nama = document.getElementById("manualNama").value.trim();
@@ -97,7 +100,7 @@ document.getElementById("kirimManual").addEventListener("click", function(e){
     const ket = document.getElementById("manualKet").value.trim();
     const tanggal = new Date().toLocaleDateString();
 
-    if(!nis || !nama || !no_absen) {
+    if (!nis || !nama || !no_absen) {
         showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu");
         return;
     }
@@ -106,7 +109,7 @@ document.getElementById("kirimManual").addEventListener("click", function(e){
     showSuccess();
     kunciForm();
 
-    // Kirim manual WA → SEKARANG MASUK GRUP
+    // Kirim WA ke Grup (manual)
     kirimWAmanual(nama, no_absen, nis, status, ket, tanggal);
 
     setTimeout(() => {
