@@ -23,7 +23,7 @@ function kunciForm() {
     document.querySelectorAll("input, select, #kirimManual").forEach(el => el.disabled = true);
 }
 
-/* Kirim ke WA Admin (Manual, tanpa server) */
+/* ===================== KIRIM WA KE GRUP (SUDAH DIGANTI) ===================== */
 function kirimWAmanual(nama, no_absen, nis, status, keterangan, tanggal) {
     const pesan = `ABSENSI SISWA
 Nama: ${nama}
@@ -33,10 +33,13 @@ Status: ${status}
 Keterangan: ${keterangan}
 Tanggal: ${tanggal}`;
 
-    const nomorAdmin = "081233310308".replace(/^0/, "62");
-    const url = `https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`;
-    window.open(url, "_blank"); // WA terbuka, admin klik Send
+    const linkGrup = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1?mode=hqrt3";
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&phone=&link=${encodeURIComponent(linkGrup)}`;
+
+    window.open(url, "_blank");
 }
+/* ========================================================================== */
 
 /* ================= SCAN QR ================= */
 const qrReader = new Html5Qrcode("reader");
@@ -72,7 +75,7 @@ Html5Qrcode.getCameras().then(cameras => {
             showSuccess();
             kunciForm();
 
-            // Kirim manual WA
+            // Kirim manual WA → SEKARANG MASUK GRUP
             kirimWAmanual(parts[1], parts[2], parts[0], "HADIR", "-", new Date().toLocaleDateString());
 
             setTimeout(() => {
@@ -90,7 +93,7 @@ document.getElementById("kirimManual").addEventListener("click", function(e){
     const nis = document.getElementById("manualId").value.trim();
     const nama = document.getElementById("manualNama").value.trim();
     const no_absen = document.getElementById("manualKelas").value.trim();
-    const status = document.getElementById("manualStatus").value; // HADIR / SAKIT / IJIN
+    const status = document.getElementById("manualStatus").value;
     const ket = document.getElementById("manualKet").value.trim();
     const tanggal = new Date().toLocaleDateString();
 
@@ -103,7 +106,7 @@ document.getElementById("kirimManual").addEventListener("click", function(e){
     showSuccess();
     kunciForm();
 
-    // Kirim manual WA
+    // Kirim manual WA → SEKARANG MASUK GRUP
     kirimWAmanual(nama, no_absen, nis, status, ket, tanggal);
 
     setTimeout(() => {
