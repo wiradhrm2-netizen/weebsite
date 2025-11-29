@@ -201,9 +201,7 @@ function kunciForm(){
     document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true);
 }
 
-/* ============================
-   FUNGSI WA KE GRUP FINAL
-   ============================ */
+/* Fungsi WA → user pilih grup sendiri */
 function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
     const pesan = `ABSENSI SISWA
 Nama: ${nama}
@@ -213,10 +211,10 @@ Status: ${status}
 Keterangan: ${ket}
 Tanggal: ${tanggal}`;
 
-    // 1. Buka link grup (WA akan mengingat grup terakhir)
+    // Buka link grup WA (user harus klik "Gabung" jika belum)
     window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1", "_blank");
 
-  // WA hanya bisa mengisi text, user memilih grupnya
+    // Buka WA API dengan pesan terisi
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
 }
 
