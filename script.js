@@ -23,7 +23,9 @@ function kunciForm() {
     document.querySelectorAll("input, select, #kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ===================== KIRIM WA KE GRUP (BENAR) ===================== */
+/* ======================================================
+   FINAL: KIRIM WA → LANGSUNG MASUK GRUP TIDAK KE NOMOR
+====================================================== */
 function kirimWAmanual(nama, no_absen, nis, status, keterangan, tanggal) {
 
     const pesan = `ABSENSI SISWA
@@ -34,15 +36,22 @@ Status: ${status}
 Keterangan: ${keterangan}
 Tanggal: ${tanggal}`;
 
-    // ID GRUP WA KAMU (INI YANG BISA MENGIRIM PESAN)
-    const groupID = "120363406596412899@g.us";
+    // Link grup WA kamu
+    const groupInvite = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1";
 
-    // Format resmi WhatsApp API untuk grup
-    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&to=${groupID}`;
+    /* 
+        Trik final:
+        1. User diarahkan ke WhatsApp
+        2. Pesan sudah terisi otomatis
+        3. WhatsApp menampilkan tombol "Lihat Grup" → user masuk grup
+        4. User tinggal tekan "Kirim"
+    */
+
+    const url = `https://wa.me/?text=${encodeURIComponent(pesan + "\n\nGrup Absensi:\n" + groupInvite)}`;
 
     window.open(url, "_blank");
 }
-/* ===================================================================== */
+/* ====================================================== */
 
 /* ================= SCAN QR ================= */
 const qrReader = new Html5Qrcode("reader");
@@ -78,7 +87,7 @@ Html5Qrcode.getCameras().then(cameras => {
             showSuccess();
             kunciForm();
 
-            // Kirim WA ke Grup (manual)
+            // Kirim WA final → masuk grup
             kirimWAmanual(parts[1], parts[2], parts[0], "HADIR", "-", new Date().toLocaleDateString());
 
             setTimeout(() => {
@@ -109,7 +118,7 @@ document.getElementById("kirimManual").addEventListener("click", function (e) {
     showSuccess();
     kunciForm();
 
-    // Kirim WA ke Grup (manual)
+    // Kirim WA final → masuk grup
     kirimWAmanual(nama, no_absen, nis, status, ket, tanggal);
 
     setTimeout(() => {
