@@ -81,12 +81,8 @@ Tanggal: ${tanggal}`;
     const grupWA="https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1";
 
     // Open grup WA (user tinggal klik kirim)
-    window.open(`${grupWA}?text=${encodeURIComponent(Nama: ${nama}
-No Absen: ${no_absen}
-NIS: ${nis}
-Status: ${status}
-Keterangan: ${ket || "-"}
-Tanggal: ${tanggal}`;)}`,"_blank");
+  
+    window.open(`${grupWA}?text=${encodeURIComponent(Nama, NIS, Keterangan,Tanggal)}`,"_blank");
 }
 
 /* QR Scanner */
