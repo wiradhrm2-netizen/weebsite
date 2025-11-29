@@ -8,7 +8,6 @@
 <script src="https://unpkg.com/html5-qrcode"></script>
 <link rel="stylesheet" href="style.css">
 <style>
-/* ===== Premium Card Style ===== */
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #f5f7ff, #e0ebff);
@@ -23,6 +22,7 @@ body {
     box-shadow: 0 15px 40px rgba(0,0,0,0.1);
     width: 100%;
     max-width: 500px;
+    text-align: center;
 }
 input, select, button {
     width: 100%;
@@ -37,12 +37,11 @@ button {
     font-weight:600;
     transition:0.3s;
 }
-button#kirimManual { background:#346dff; color:#fff; }
-button#kirimManual:hover { background:#1a52d1; }
-button#backBtn { background:#999; color:#fff; }
-button#backBtn:hover { background:#666; }
+#kirimManual, #kirimWAQR { background:#346dff; color:#fff; }
+#kirimManual:hover, #kirimWAQR:hover { background:#1a52d1; }
+#backBtn { background:#999; color:#fff; }
+#backBtn:hover { background:#666; }
 
-/* ===== Notifikasi ===== */
 .success {
     display:none;
     position:fixed;
@@ -105,125 +104,81 @@ button#backBtn:hover { background:#666; }
 </div>
 
 <div id="successMsg" class="success">✅ Absensi Berhasil</div>
-<div id="notif" class="notif">⚠️ Silahkan mengisi terlebih dahulu</div>
-<button id="kirimWAQR" style="display:none;">Kirim ke Grup WA</button>
+<div id="notif" class="notif">⚠️ Silahkan scan QR atau isi form terlebih dahulu</div>
 
 <script>
 let sudahAbsen = false;
 let qrData = null;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-/* ===== Fungsi Kembali ke Landing Page ===== */
-function kembaliKeLanding() {
-    window.location.href = "index.html";
-}
-
-/* ===== Notifikasi Sukses ===== */
 function showSuccess() {
     const s = document.getElementById("successMsg");
     s.style.display = "block";
     beep.play();
+    setTimeout(()=>s.style.display="none",2000);
 }
 
-/* ===== Notifikasi Error ===== */
-function showNotif(msg) {
-    const n = document.getElementById("notif");
-    n.innerText = msg;
+function showNotif(msg){
+    const n=document.getElementById("notif");
+    n.innerText=msg;
     n.classList.add("show");
-    setTimeout(() => n.classList.remove("show"), 2000);
+    setTimeout(()=>n.classList.remove("show"),2000);
 }
 
-/* ===== Kunci Form ===== */
-function kunciForm() {
-    document.querySelectorAll("input, select, button#kirimManual").forEach(el => el.disabled = true);
+function kunciForm(){ sudahAbsen=true; document.getElementById("kirimManual").disabled=true; }
+
+function kirimWA(nama,no_absen,nis,status,ket,tanggal){
+    const pesan = `ABSENSI SISWA\nNama: ${nama}\nNo Absen: ${no_absen}\nNIS: ${nis}\nStatus: ${status}\nKeterangan: ${ket}\nTanggal: ${tanggal}`;
+    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1","_blank");
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`,"_blank");
 }
 
-/* ===== FUNGSI WA KE GRUP ===== */
-function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
-    const pesan = `ABSENSI SISWA
-Nama: ${nama}
-No Absen: ${no_absen}
-NIS: ${nis}
-Status: ${status}
-Keterangan: ${ket}
-Tanggal: ${tanggal}`;
-
-    // 1. Buka link grup WA
-    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1", "_blank");
-    // 2. WA Text (user pilih grup)
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
-}
-
-/* ===== SCAN QR ===== */
+/* QR Scanner */
 const reader = new Html5Qrcode("reader");
 Html5Qrcode.getCameras().then(cameras => {
-    if (cameras.length > 0) {
-        let backCamera = cameras.find(cam => cam.label.toLowerCase().includes("back") || cam.label.toLowerCase().includes("environment")) || cameras[0];
+    if(cameras.length>0){
+        let backCamera=cameras.find(cam=>cam.label.toLowerCase().includes("back")||cam.label.toLowerCase().includes("environment"))||cameras[0];
+        reader.start(backCamera.id,{fps:10,qrbox:250},qr=>{
+            if(sudahAbsen) return;
+            if(!qr || qr.trim()===""){ showNotif("⚠️ QR kosong"); return; }
 
-        reader.start(
-            backCamera.id,
-            { fps: 10, qrbox: 250 },
-            qr => {
-                if (sudahAbsen) return;
+            const parts=qr.split('|');
+            if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
 
-                const parts = qr.split('|');
-                if(parts.length < 3){ showNotif("⚠️ QR tidak valid"); return; }
-
-                qrData = {
-                    nis: parts[0].trim(),
-                    nama: parts[1].trim(),
-                    no_absen: parts[2].trim()
-                };
-
-                sudahAbsen = true;
-                reader.stop();
-                document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
-                showSuccess();
-                kunciForm();
-
-                document.getElementById("kirimWAQR").style.display="inline-block";
-            }
-        );
-    } else {
-        showNotif("⚠️ Kamera tidak ditemukan");
-    }
+            qrData={nis:parts[0].trim(), nama:parts[1].trim(), no_absen:parts[2].trim()};
+            document.getElementById("scanStatus").innerText="QR Terdeteksi ✅";
+            // Auto isi input
+            document.getElementById("manualId").value = qrData.nis;
+            document.getElementById("manualNama").value = qrData.nama;
+            document.getElementById("manualKelas").value = qrData.no_absen;
+        });
+    } else { showNotif("⚠️ Kamera tidak ditemukan"); }
 });
 
-/* ===== Tombol Kirim WA QR ===== */
-document.getElementById("kirimWAQR").addEventListener("click", ()=>{
-    if(!qrData) return;
-    kirimWAmanual(qrData.nama, qrData.no_absen, qrData.nis, "Hadir", "-", new Date().toLocaleDateString());
-});
-
-/* ===== KIRIM MANUAL ===== */
-document.getElementById("kirimManual").onclick = () => {
+/* Tombol Kirim */
+document.getElementById("kirimManual").onclick = ()=>{
     if(sudahAbsen) return;
 
-    const nis = document.getElementById("manualId").value.trim();
-    const nama = document.getElementById("manualNama").value.trim();
-    const no_absen = document.getElementById("manualKelas").value.trim();
-    const status = document.getElementById("manualStatus").value;
-    const ket = document.getElementById("manualKet").value.trim();
-    const tanggal = new Date().toLocaleDateString();
+    const nis=document.getElementById("manualId").value.trim();
+    const nama=document.getElementById("manualNama").value.trim();
+    const no_absen=document.getElementById("manualKelas").value.trim();
+    const status=document.getElementById("manualStatus").value;
+    const ket=document.getElementById("manualKet").value.trim();
+    const tanggal=new Date().toLocaleDateString();
 
-    if(!nis || !nama || !no_absen){ showNotif("⚠️ Silahkan mengisi semua form"); return; }
+    if(!nis || !nama || !no_absen){ showNotif("⚠️ Silahkan isi semua form"); return; }
 
-    let dataAbsensi = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
+    let dataAbsensi=JSON.parse(localStorage.getItem("absensiAOS")||"[]");
     dataAbsensi.push({tanggal, nis, nama, kelas:no_absen, status, ket});
     localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
 
-    sudahAbsen = true;
+    kirimWA(nama,no_absen,nis,status,ket||"-",tanggal);
     showSuccess();
     kunciForm();
-
-    // Kirim ke WA grup
-    kirimWAmanual(nama, no_absen, nis, status, ket || "-", tanggal);
 };
 
-/* ===== BACK BUTTON ===== */
-document.getElementById("backBtn").onclick = () => {
-    kembaliKeLanding();
-};
+/* Back Button */
+document.getElementById("backBtn").onclick = ()=>{ window.location.href="index.html"; };
 </script>
 </body>
 </html>
