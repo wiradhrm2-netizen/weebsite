@@ -3,262 +3,160 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>AOS | Absensi Online Siswa</title>
+<title>Absensi Siswa</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<script src="https://unpkg.com/html5-qrcode"></script>
+<link rel="stylesheet" href="style.css">
 <style>
-/* Reset & Font */
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; position: relative; overflow-x: hidden; padding-bottom: 50px; }
-/* Loading Screen */
-#loadingAOS { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.95); display: flex; justify-content: center; align-items: center; flex-direction: column; z-index: 9999; transition: opacity 0.5s ease; }
-.loader-circle { width: 70px; height: 70px; border: 6px solid #c9d6ff; border-top: 6px solid #346dff; border-radius: 50%; animation: spin 1s linear infinite; }
-@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-.loading-text { margin-top: 15px; font-size: 18px; font-weight: 600; color: #1a2b5f; letter-spacing: 1px; }
-/* Logo */
-.logo { width: 120px; height: auto; margin-bottom: 30px; display: block; }
-/* Sections */
-.section { min-height: 100vh; display: none; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; }
-.section.active { display: flex; }
-.section h1, .section h2 { color: #346dff; margin-bottom: 15px; }
-.section p { font-size: 1rem; color: #1a2b5f; margin-bottom: 20px; max-width: 800px; }
-/* Button */
-.btn-primary, .btn-back, button { display: inline-block; background: #346dff; color: #fff; border: none; padding: 12px 30px; border-radius: 8px; cursor: pointer; font-weight: 600; text-decoration: none; transition: all 0.3s ease; margin:5px; }
-.btn-primary:hover, .btn-back:hover, button:hover { background: #1a52d1; }
-/* Hamburger Menu */
-.hamburger { position: fixed; top: 20px; right: 20px; width: 35px; height: 30px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 10001; }
-.hamburger span { display: block; height: 4px; background: #346dff; border-radius: 2px; transition: all 0.3s ease; }
-.hamburger.active span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
-.hamburger.active span:nth-child(2) { opacity: 0; }
-.hamburger.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -7px); }
-/* Sidebar Menu */
-.sidebar { position: fixed; top: 0; right: -250px; width: 250px; height: 100%; background: #346dff; color: #fff; padding: 60px 20px; display: flex; flex-direction: column; gap: 20px; transition: right 0.3s ease; z-index: 10000; }
-.sidebar a { color: #fff; text-decoration: none; font-size: 1.1rem; transition: color 0.2s ease; }
-.sidebar a:hover { color: #c9d6ff; }
-.sidebar.active { right: 0; }
-/* Overlay */
-.overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); opacity: 0; visibility: hidden; transition: opacity 0.3s ease; z-index: 9999; }
-.overlay.active { opacity: 1; visibility: visible; }
-/* Tabel Absensi */
-.absensi-table { border:4px solid #FFD700; border-radius:10px; overflow:hidden; width:100%; max-width:700px; margin:30px auto; }
-.absensi-table table { width:100%; border-collapse:collapse; }
-.absensi-table th { background:#FFD700; color:#1a2b5f; padding:12px; }
-.absensi-table td { padding:10px; }
-.absensi-table tr:nth-child(even) td { background:#f0f0f0; }
-.absensi-table tr:nth-child(odd) td { background:#fff; }
-/* Responsive */
-@media (max-width: 600px) { .section h1 { font-size: 2rem; } .section h2 { font-size: 1.5rem; } }
+body {
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #f5f7ff, #e0ebff);
+    display: flex;
+    justify-content: center;
+    padding: 30px;
+}
+.card {
+    background: #fff;
+    padding: 30px 40px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.1);
+    width: 100%;
+    max-width: 500px;
+    text-align: center;
+}
+input, select, button {
+    width: 100%;
+    margin: 10px 0;
+    padding: 12px;
+    border-radius: 10px;
+    border:1px solid #ccc;
+    font-size: 15px;
+}
+button {
+    cursor:pointer;
+    font-weight:600;
+    transition:0.3s;
+}
+#kirimManual, #kirimWAQR { background:#346dff; color:#fff; }
+#kirimManual:hover, #kirimWAQR:hover { background:#1a52d1; }
+#backBtn { background:#999; color:#fff; }
+#backBtn:hover { background:#666; }
+
+.success {
+    display:none;
+    position:fixed;
+    top:20px;
+    left:50%;
+    transform:translateX(-50%);
+    background:#4caf50;
+    color:#fff;
+    padding:15px 30px;
+    border-radius:10px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.2);
+    z-index:1000;
+    font-weight:600;
+    text-align:center;
+}
+.notif {
+    position:fixed;
+    bottom:25px;
+    left:50%;
+    transform:translateX(-50%) scale(0.8);
+    background:rgba(255,80,80,0.95);
+    color:#fff;
+    padding:14px 22px;
+    border-radius:14px;
+    font-size:15px;
+    font-weight:600;
+    box-shadow:0 4px 15px rgba(0,0,0,0.15);
+    opacity:0;
+    transition:0.35s;
+    pointer-events:none;
+    text-align:center;
+}
+.notif.show {
+    opacity:1;
+    transform:translateX(-50%) scale(1);
+}
 </style>
 </head>
 <body>
+<div class="card">
+    <h1>Absensi Siswa</h1>
 
-<!-- Hamburger Menu -->
-<div class="hamburger" id="hamburgerMenu">
-    <span></span><span></span><span></span>
-</div>
-<!-- Sidebar Menu -->
-<div class="sidebar" id="sidebarMenu">
-    <a href="#" data-section="tentang">Tentang AOS</a>
-</div>
-<!-- Overlay -->
-<div class="overlay" id="overlay"></div>
+    <h2>Scan QR</h2>
+    <div id="reader"></div>
+    <p id="scanStatus" style="font-size:14px;color:#555">Mengaktifkan kamera...</p>
 
-<!-- Logo -->
-<img class="logo" src="AOS_logo.png" alt="Logo AOS" />
+    <h2>Isi Manual</h2>
+    <input id="manualId" placeholder="NIS" autocomplete="off" />
+    <input id="manualNama" placeholder="Nama Lengkap" />
+    <input id="manualKelas" placeholder="Kelas (misal 8A)" />
+    <select id="manualStatus">
+        <option value="Hadir">Hadir</option>
+        <option value="Izin">Izin</option>
+        <option value="Sakit">Sakit</option>
+    </select>
+    <input id="manualKet" placeholder="Keterangan (opsional)" />
 
-<!-- Loading Screen -->
-<div id="loadingAOS">
-    <div class="loader-circle"></div>
-    <div class="loading-text">AOS Loading...</div>
-</div>
-
-<!-- Section: Beranda -->
-<div class="section active" id="home">
-    <h1>AOS — Absensi Online Siswa</h1>
-    <p>Silahkan pilih untuk masuk ke halaman absensi.</p>
-    <button onclick="location.href='absensi.html'" class="btn-primary">Masuk ke Absensi</button>
-
-    <!-- Tabel Absensi -->
-    <div class="absensi-table">
-        <table id="tabelAbsensi">
-            <thead>
-                <tr>
-                    <th>Tanggal</th>
-                    <th>NIS</th>
-                    <th>Nama</th>
-                    <th>Kelas</th>
-                    <th>Status</th>
-                    <th>Keterangan</th>
-                </tr>
-            </thead>
-            <tbody>
-                <!-- Data absensi muncul di sini -->
-            </tbody>
-        </table>
-    </div>
+    <button id="kirimManual">Kirim Absen</button>
+    <button id="backBtn">Kembali</button>
 </div>
 
-<!-- Section: Tentang AOS -->
-<div class="section" id="tentang">
-    <h2>Apa itu AOS?</h2>
-    <p>AOS (Absensi Online Siswa) adalah sistem absensi berbasis web untuk memudahkan sekolah dalam mencatat kehadiran siswa secara digital. Proses absensi menjadi cepat, akurat, dan ramah lingkungan karena mengurangi penggunaan kertas.</p>
-    <h2>Fitur Utama AOS</h2>
-    <p>1. Absensi QR Code<br>2. Form Manual<br>3. Laporan Real-Time<br>4. Notifikasi Absensi</p>
-    <h2>Manfaat AOS</h2>
-    <p>Meningatkan efisiensi pencatatan kehadiran, meminimalkan kesalahan data, mempermudah monitoring, dan siswa dapat melakukan absensi tanpa antre panjang.</p>
-    <a href="#" class="btn-back" data-section="home">Kembali ke Beranda</a>
-</div>
+<div id="successMsg" class="success">✅ Absensi Berhasil</div>
+<div id="notif" class="notif">⚠️ Silahkan scan QR atau isi form terlebih dahulu</div>
 
-<!-- Notifikasi & Tombol WA -->
-<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">Absen berhasil, WA siap dikirim ke grup ✅</div>
-<div id="notif" style="display:block; color:red; margin:10px 0; font-weight:bold;"></div>
-<button id="kirimWAQR" style="display:none;">Kirim ke Grup WA</button>
-
-<script src="https://unpkg.com/html5-qrcode"></script>
 <script>
-// ===== Loading + Hamburger + Tabel =====
-window.onload = () => {
-    setTimeout(() => {
-        const loading = document.getElementById('loadingAOS');
-        loading.style.opacity = '0';
-        loading.style.pointerEvents = 'none';
-        setTimeout(() => loading.style.display = 'none', 500);
-        loadAbsensi();
-    }, 1200);
-};
-
-const hamburger = document.getElementById('hamburgerMenu');
-const sidebar = document.getElementById('sidebarMenu');
-const overlay = document.getElementById('overlay');
-const sections = document.querySelectorAll('.section');
-
-hamburger.addEventListener('click', () => {
-    hamburger.classList.toggle('active');
-    sidebar.classList.toggle('active');
-    overlay.classList.toggle('active');
-});
-
-overlay.addEventListener('click', () => {
-    hamburger.classList.remove('active');
-    sidebar.classList.remove('active');
-    overlay.classList.remove('active');
-});
-
-sidebar.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', (e) => {
-        e.preventDefault();
-        const target = link.getAttribute('data-section');
-        sections.forEach(sec => sec.classList.remove('active'));
-        const activeSection = document.getElementById(target);
-        if(activeSection) activeSection.classList.add('active');
-        hamburger.classList.remove('active');
-        sidebar.classList.remove('active');
-        overlay.classList.remove('active');
-    });
-});
-
-document.querySelectorAll('.btn-back').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        sections.forEach(sec => sec.classList.remove('active'));
-        document.getElementById('home').classList.add('active');
-    });
-});
-
-function loadAbsensi() {
-    const data = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
-    const tbody = document.getElementById("tabelAbsensi").querySelector("tbody");
-    tbody.innerHTML = "";
-    data.forEach(item => {
-        const row = document.createElement("tr");
-        row.innerHTML = `
-            <td>${item.tanggal}</td>
-            <td>${item.nis}</td>
-            <td>${item.nama}</td>
-            <td>${item.kelas}</td>
-            <td>${item.status}</td>
-            <td>${item.ket || "-"}</td>
-        `;
-        tbody.appendChild(row);
-    });
-}
-
-// ===== WA Manual & QR =====
-let sudahAbsen=false;
-let qrData=null;
+let sudahAbsen = false;
+let qrData = null;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-function showSuccessWA(){ 
-    document.getElementById("successMsg").style.display="block"; 
+function showSuccess() {
+    const s = document.getElementById("successMsg");
+    s.style.display = "block";
     beep.play();
+    setTimeout(()=>s.style.display="none",2000);
 }
 
-function showNotif(msg){ 
-    const n=document.getElementById("notif"); 
-    n.innerText=msg; 
-    setTimeout(()=>n.innerText="",2000);
+function showNotif(msg){
+    const n=document.getElementById("notif");
+    n.innerText=msg;
+    n.classList.add("show");
+    setTimeout(()=>n.classList.remove("show"),2000);
 }
 
-function kunciForm(){ 
-    document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true);
+function kunciForm(){ sudahAbsen=true; document.getElementById("kirimManual").disabled=true; }
+
+function kirimWA(nama,no_absen,nis,status,ket,tanggal){
+    const pesan = `ABSENSI SISWA\nNama: ${nama}\nNo Absen: ${no_absen}\nNIS: ${nis}\nStatus: ${status}\nKeterangan: ${ket}\nTanggal: ${tanggal}`;
+    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1","_blank");
+    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`,"_blank");
 }
 
-/* Fungsi WA → user pilih grup sendiri */
-function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
-    const pesan = `ABSENSI SISWA
-Nama: ${nama}
-No Absen: ${no_absen}
-NIS: ${nis}
-Status: ${status}
-Keterangan: ${ket}
-Tanggal: ${tanggal}`;
-
-    // Buka link grup WA (user harus klik "Gabung" jika belum)
-    window.open("https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1", "_blank");
-
-    // Buka WA API dengan pesan terisi
-    window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}`, "_blank");
-}
-
-/* QR Scan */
-const qrReader = new Html5Qrcode("reader");
-Html5Qrcode.getCameras().then(cameras=>{
-    if(cameras.length===0){ showNotif("⚠️ Kamera tidak ditemukan"); return;}
-
-    let backCamera=cameras.find(c=>c.label.toLowerCase().includes("back"))||cameras[0];
-
-    qrReader.start(
-        backCamera.id,
-        {fps:10,qrbox:250},
-        qr=>{
+/* QR Scanner */
+const reader = new Html5Qrcode("reader");
+Html5Qrcode.getCameras().then(cameras => {
+    if(cameras.length>0){
+        let backCamera=cameras.find(cam=>cam.label.toLowerCase().includes("back")||cam.label.toLowerCase().includes("environment"))||cameras[0];
+        reader.start(backCamera.id,{fps:10,qrbox:250},qr=>{
             if(sudahAbsen) return;
+            if(!qr || qr.trim()===""){ showNotif("⚠️ QR kosong"); return; }
 
             const parts=qr.split('|');
             if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
 
-            qrData={
-                nama:parts[1],
-                no_absen:parts[2],
-                nis:parts[0]
-            };
-
-            sudahAbsen=true;
-            qrReader.stop();
-            showSuccessWA();
-            kunciForm();
-
-            document.getElementById("kirimWAQR").style.display="inline-block";
-        }
-    );
+            qrData={nis:parts[0].trim(), nama:parts[1].trim(), no_absen:parts[2].trim()};
+            document.getElementById("scanStatus").innerText="QR Terdeteksi ✅";
+            // Auto isi input
+            document.getElementById("manualId").value = qrData.nis;
+            document.getElementById("manualNama").value = qrData.nama;
+            document.getElementById("manualKelas").value = qrData.no_absen;
+        });
+    } else { showNotif("⚠️ Kamera tidak ditemukan"); }
 });
 
-/* Tombol Kirim WA QR */
-document.getElementById("kirimWAQR").addEventListener("click", ()=>{
-    if(!qrData) return;
-    kirimWAmanual(qrData.nama,qrData.no_absen,qrData.nis,"HADIR","-",new Date().toLocaleDateString());
-});
-
-/* Manual Form WA */
-document.getElementById("kirimManual")?.addEventListener("click",function(e){
-    e.preventDefault();
+/* Tombol Kirim */
+document.getElementById("kirimManual").onclick = ()=>{
     if(sudahAbsen) return;
 
     const nis=document.getElementById("manualId").value.trim();
@@ -268,19 +166,19 @@ document.getElementById("kirimManual")?.addEventListener("click",function(e){
     const ket=document.getElementById("manualKet").value.trim();
     const tanggal=new Date().toLocaleDateString();
 
-    if(!nis||!nama||!no_absen){ 
-        showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu"); 
-        return;
-    }
+    if(!nis || !nama || !no_absen){ showNotif("⚠️ Silahkan isi semua form"); return; }
 
-    sudahAbsen=true;
-    showSuccessWA();
+    let dataAbsensi=JSON.parse(localStorage.getItem("absensiAOS")||"[]");
+    dataAbsensi.push({tanggal, nis, nama, kelas:no_absen, status, ket});
+    localStorage.setItem("absensiAOS", JSON.stringify(dataAbsensi));
+
+    kirimWA(nama,no_absen,nis,status,ket||"-",tanggal);
+    showSuccess();
     kunciForm();
+};
 
-    kirimWAmanual(nama,no_absen,nis,status,ket,tanggal);
-});
-
-document.getElementById("backBtn")?.addEventListener("click",()=>location.reload());
+/* Back Button */
+document.getElementById("backBtn").onclick = ()=>{ window.location.href="index.html"; };
 </script>
 </body>
 </html>
