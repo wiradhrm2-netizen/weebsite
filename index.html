@@ -108,9 +108,9 @@ body { font-family: 'Poppins', sans-serif; background: #f9faff; color: #1a2b5f; 
 </div>
 
 <!-- Notifikasi & Tombol WA -->
-<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">Absen berhasil, WA siap dikirim ke admin ✅</div>
+<div id="successMsg" style="display:none; color:green; margin:10px 0; font-weight:bold;">Absen berhasil, WA siap dikirim ke grup ✅</div>
 <div id="notif" style="display:block; color:red; margin:10px 0; font-weight:bold;"></div>
-<button id="kirimWAQR" style="display:none;">Kirim ke WA Admin</button>
+<button id="kirimWAQR" style="display:none;">Kirim ke Grup WA</button>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 <script>
@@ -129,16 +129,19 @@ const hamburger = document.getElementById('hamburgerMenu');
 const sidebar = document.getElementById('sidebarMenu');
 const overlay = document.getElementById('overlay');
 const sections = document.querySelectorAll('.section');
+
 hamburger.addEventListener('click', () => {
     hamburger.classList.toggle('active');
     sidebar.classList.toggle('active');
     overlay.classList.toggle('active');
 });
+
 overlay.addEventListener('click', () => {
     hamburger.classList.remove('active');
     sidebar.classList.remove('active');
     overlay.classList.remove('active');
 });
+
 sidebar.querySelectorAll('a').forEach(link => {
     link.addEventListener('click', (e) => {
         e.preventDefault();
@@ -151,6 +154,7 @@ sidebar.querySelectorAll('a').forEach(link => {
         overlay.classList.remove('active');
     });
 });
+
 document.querySelectorAll('.btn-back').forEach(btn => {
     btn.addEventListener('click', (e) => {
         e.preventDefault();
@@ -158,6 +162,7 @@ document.querySelectorAll('.btn-back').forEach(btn => {
         document.getElementById('home').classList.add('active');
     });
 });
+
 function loadAbsensi() {
     const data = JSON.parse(localStorage.getItem("absensiAOS") || "[]");
     const tbody = document.getElementById("tabelAbsensi").querySelector("tbody");
@@ -180,38 +185,71 @@ function loadAbsensi() {
 let sudahAbsen=false;
 let qrData=null;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
-function showSuccessWA(){ document.getElementById("successMsg").style.display="block"; beep.play();}
-function showNotif(msg){ const n=document.getElementById("notif"); n.innerText=msg; setTimeout(()=>n.innerText="",2000);}
-function kunciForm(){ document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true);}
+
+function showSuccessWA(){ 
+    document.getElementById("successMsg").style.display="block"; 
+    beep.play();
+}
+
+function showNotif(msg){ 
+    const n=document.getElementById("notif"); 
+    n.innerText=msg; 
+    setTimeout(()=>n.innerText="",2000);
+}
+
+function kunciForm(){ 
+    document.querySelectorAll("input, select, #kirimManual").forEach(el=>el.disabled=true);
+}
+
+/* ============================
+   FUNGSI WA KE GRUP (DIGABUNG)
+   ============================ */
 function kirimWAmanual(nama,no_absen,nis,status,ket,tanggal){
-    const pesan=`ABSENSI SISWA
+    const pesan = `ABSENSI SISWA
 Nama: ${nama}
 No Absen: ${no_absen}
 NIS: ${nis}
 Status: ${status}
 Keterangan: ${ket}
 Tanggal: ${tanggal}`;
-    const nomorAdmin="081233310308".replace(/^0/,"62");
-    const url=`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`;
-    window.open(url,"_blank");
+
+    const linkGrup = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1?mode=hqrt3";
+
+    const url = `https://api.whatsapp.com/send?text=${encodeURIComponent(pesan)}&phone=&link=${encodeURIComponent(linkGrup)}`;
+
+    window.open(url, "_blank");
 }
 
 /* QR Scan */
 const qrReader = new Html5Qrcode("reader");
 Html5Qrcode.getCameras().then(cameras=>{
     if(cameras.length===0){ showNotif("⚠️ Kamera tidak ditemukan"); return;}
+
     let backCamera=cameras.find(c=>c.label.toLowerCase().includes("back"))||cameras[0];
-    qrReader.start(backCamera.id,{fps:10,qrbox:250}, qr=>{
-        if(sudahAbsen) return;
-        const parts=qr.split('|');
-        if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
-        qrData={nama:parts[1],no_absen:parts[2],nis:parts[0]};
-        sudahAbsen=true;
-        qrReader.stop();
-        showSuccessWA();
-        kunciForm();
-        document.getElementById("kirimWAQR").style.display="inline-block";
-    });
+
+    qrReader.start(
+        backCamera.id,
+        {fps:10,qrbox:250},
+        qr=>{
+            if(sudahAbsen) return;
+
+            const parts=qr.split('|');
+            if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
+
+            qrData={
+                nama:parts[1],
+                no_absen:parts[2],
+                nis:parts[0]
+            };
+
+            sudahAbsen=true;
+            qrReader.stop();
+            showSuccessWA();
+            kunciForm();
+
+            document.getElementById("kirimWAQR").style.display="inline-block";
+        }
+    );
 });
 
 /* Tombol Kirim WA QR */
@@ -224,20 +262,26 @@ document.getElementById("kirimWAQR").addEventListener("click", ()=>{
 document.getElementById("kirimManual")?.addEventListener("click",function(e){
     e.preventDefault();
     if(sudahAbsen) return;
+
     const nis=document.getElementById("manualId").value.trim();
     const nama=document.getElementById("manualNama").value.trim();
     const no_absen=document.getElementById("manualKelas").value.trim();
     const status=document.getElementById("manualStatus").value;
     const ket=document.getElementById("manualKet").value.trim();
     const tanggal=new Date().toLocaleDateString();
-    if(!nis||!nama||!no_absen){ showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu"); return;}
+
+    if(!nis||!nama||!no_absen){ 
+        showNotif("⚠️ Silahkan mengisi semua form terlebih dahulu"); 
+        return;
+    }
+
     sudahAbsen=true;
     showSuccessWA();
     kunciForm();
+
     kirimWAmanual(nama,no_absen,nis,status,ket,tanggal);
 });
 
-/* Tombol back reload */
 document.getElementById("backBtn")?.addEventListener("click",()=>location.reload());
 </script>
 </body>
