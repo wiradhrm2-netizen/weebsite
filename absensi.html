@@ -29,7 +29,7 @@ button#kirimManual:hover { background:#1a52d1; }
     <h2>Isi Manual</h2>
     <input id="manualId" placeholder="NIS" autocomplete="off" />
     <input id="manualNama" placeholder="Nama Lengkap" />
-    <input id="manualKelas" placeholder="Kelas" />
+    <input id="manualKelas" placeholder="No Absen / Kelas" />
     <select id="manualStatus">
         <option value="Hadir">Hadir</option>
         <option value="Izin">Izin</option>
@@ -67,22 +67,20 @@ function kunciForm(){
     sudahAbsen=true;
 }
 
-/* Kirim pesan ke grup WA */
-function kirimKeGrupWA(nama,no_absen,nis,status,ket,tanggal){
-    const pesan=`ABSENSI SISWA
+/* Kirim WA ke nomor */
+function kirimKeWA(nama, no_absen, nis, status, ket, tanggal) {
+    const pesan =
+`ABSENSI SISWA
 Nama: ${nama}
 No Absen: ${no_absen}
 NIS: ${nis}
 Status: ${status}
 Keterangan: ${ket || "-"}
 Tanggal: ${tanggal}`;
-    
-    // Link grup WA
-    const grupWA="https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1";
 
-    // Open grup WA (user tinggal klik kirim)
-  
-    window.open(`${grupWA}?text=${encodeURIComponent(Nama, NIS, Keterangan,Tanggal)}`,"_blank");
+    const nomor = "6285604757431";
+    const url = `https://wa.me/${nomor}?text=` + encodeURIComponent(pesan);
+    window.open(url, "_blank");
 }
 
 /* QR Scanner */
@@ -94,10 +92,17 @@ Html5Qrcode.getCameras().then(cameras=>{
             if(sudahAbsen) return;
             const parts=qr.split('|');
             if(parts.length<3){ showNotif("⚠️ QR tidak valid"); return; }
-            qrData={nis:parts[0].trim(), nama:parts[1].trim(), no_absen:parts[2].trim()};
-            document.getElementById("manualId").value=qrData.nis;
-            document.getElementById("manualNama").value=qrData.nama;
-            document.getElementById("manualKelas").value=qrData.no_absen;
+
+            qrData={
+                nis: parts[0].trim(),
+                nama: parts[1].trim(),
+                no_absen: parts[2].trim()
+            };
+
+            // Autofill input otomatis
+            document.getElementById("manualId").value = qrData.nis;
+            document.getElementById("manualNama").value = qrData.nama;
+            document.getElementById("manualKelas").value = qrData.no_absen;
         });
     } else showNotif("⚠️ Kamera tidak ditemukan");
 });
@@ -113,11 +118,16 @@ document.getElementById("kirimManual").addEventListener("click",()=>{
     const ket=document.getElementById("manualKet").value.trim();
     const tanggal=new Date().toLocaleDateString();
 
-    if(!nis||!nama||!no_absen){ showNotif("⚠️ Silahkan isi semua form"); return; }
+    if(!nis||!nama||!no_absen){
+        showNotif("⚠️ Silahkan isi semua form");
+        return;
+    }
 
     kunciForm();
     showSuccess();
-    kirimKeGrupWA(nama,no_absen,nis,status,ket,tanggal);
+
+    // Kirim otomatis ke WA
+    kirimKeWA(nama, no_absen, nis, status, ket, tanggal);
 });
 </script>
 </body>
