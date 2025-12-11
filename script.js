@@ -1,3 +1,4 @@
+<script>
 let sudahAbsen = false;
 const beep = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
@@ -23,9 +24,9 @@ function kunciForm() {
     document.querySelectorAll("input, select, #kirimManual").forEach(el => el.disabled = true);
 }
 
-/* ======================================================
-   FINAL: KIRIM WA → LANGSUNG MASUK GRUP TIDAK KE NOMOR
-====================================================== */
+/* ===================================================================
+   FINAL: KIRIM WA → LANGSUNG KE NOMOR 6285604757431
+=================================================================== */
 function kirimWAmanual(nama, no_absen, nis, status, keterangan, tanggal) {
 
     const pesan = `ABSENSI SISWA
@@ -36,22 +37,12 @@ Status: ${status}
 Keterangan: ${keterangan}
 Tanggal: ${tanggal}`;
 
-    // Link grup WA kamu
-    const groupInvite = "https://chat.whatsapp.com/LvHTeHE2A170NRCwnHqpR1";
+    const nomor = "6285604757431";
 
-    /* 
-        Trik final:
-        1. User diarahkan ke WhatsApp
-        2. Pesan sudah terisi otomatis
-        3. WhatsApp menampilkan tombol "Lihat Grup" → user masuk grup
-        4. User tinggal tekan "Kirim"
-    */
-
-    const url = `https://wa.me/?text=${encodeURIComponent(pesan + "\n\nNjjl:\n" + groupInvite)}`;
-
+    const url = `https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`;
     window.open(url, "_blank");
 }
-/* ====================================================== */
+/* =================================================================== */
 
 /* ================= SCAN QR ================= */
 const qrReader = new Html5Qrcode("reader");
@@ -62,7 +53,9 @@ Html5Qrcode.getCameras().then(cameras => {
         return;
     }
 
-    let backCamera = cameras.find(c => c.label.toLowerCase().includes("back")) || cameras[0];
+    let backCamera = cameras.find(c => 
+        c.label.toLowerCase().includes("back")
+    ) || cameras[0];
 
     qrReader.start(
         backCamera.id,
@@ -83,12 +76,15 @@ Html5Qrcode.getCameras().then(cameras => {
 
             sudahAbsen = true;
             qrReader.stop();
-            if (document.getElementById("scanStatus")) document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
+            if (document.getElementById("scanStatus"))
+                document.getElementById("scanStatus").innerText = "QR Terdeteksi ✅";
             showSuccess();
             kunciForm();
 
-            // Kirim WA final → masuk grup
-            kirimWAmanual(parts[1], parts[2], parts[0], "HADIR", "-", new Date().toLocaleDateString());
+            kirimWAmanual(
+                parts[1], parts[2], parts[0],
+                "HADIR", "-", new Date().toLocaleDateString()
+            );
 
             setTimeout(() => {
                 window.location.href = "index.html";
@@ -118,7 +114,6 @@ document.getElementById("kirimManual").addEventListener("click", function (e) {
     showSuccess();
     kunciForm();
 
-    // Kirim WA final → masuk grup
     kirimWAmanual(nama, no_absen, nis, status, ket, tanggal);
 
     setTimeout(() => {
@@ -130,3 +125,4 @@ document.getElementById("kirimManual").addEventListener("click", function (e) {
 document.getElementById("backBtn").onclick = () => {
     location.reload();
 };
+</script>
