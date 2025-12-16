@@ -1,124 +1,106 @@
 <script>
 // ================== DATA SISWA ==================
-const daftarSiswa = [
- {no:1,nama:"Afgan Aditya Syahreza",absen:false},
- {no:2,nama:"Andin Amelian",absen:false},
- {no:3,nama:"Anindya Novika",absen:false},
- {no:4,nama:"Aryasatya Toru Mustofa",absen:false},
- {no:5,nama:"Asyla Nayla Diah Susanto",absen:false},
- {no:6,nama:"Audy Melinda Putri",absen:false},
- {no:7,nama:"Aurelia Zera Indri Calista",absen:false},
- {no:8,nama:"Avansya Syaputra Pratama",absen:false},
- {no:9,nama:"Dava Alreza Saputra",absen:false},
- {no:10,nama:"Dhiva Gina Rosita",absen:false},
- {no:11,nama:"Dienda Rafita Cahaya",absen:false},
- {no:12,nama:"Friska Aprilliana",absen:false},
- {no:13,nama:"Icha Ajeng Sevtiana",absen:false},
- {no:14,nama:"Jazila Rahma Mufidah",absen:false},
- {no:15,nama:"Mei Wulansari",absen:false},
- {no:16,nama:"Melati Putri Zahratusita",absen:false},
- {no:17,nama:"Moh Ardiansyah Tri",absen:false},
- {no:18,nama:"Moh Maulana Ridlo",absen:false},
- {no:19,nama:"Mutiara Citra Widiasari",absen:false},
- {no:20,nama:"Naufal Agastian Wiyanata",absen:false}
+/* ==============================
+   DATA SISWA VALID
+============================== */
+const DATA_SISWA = [
+  { nis:"01", nama:"Afgan Aditya Syahreza" },
+  { nis:"02", nama:"Andin Amelian" },
+  { nis:"03", nama:"Anindya Novika" },
+  { nis:"04", nama:"Aryasatya Toru Mustofa" },
+  { nis:"05", nama:"Asyla Nayla Diah Susanto" },
+  { nis:"06", nama:"Audy Melinda Putri" },
+  { nis:"07", nama:"Aurelia Zera Indri Calista" },
+  { nis:"08", nama:"Avansya Syaputra Pratama" },
+  { nis:"09", nama:"Dava Alreza Saputra" },
+  { nis:"010", nama:"Dhiva Gina Rosita" },
+  { nis:"011", nama:"Dienda Rafita Cahaya" },
+  { nis:"012", nama:"Friska Aprilliana" },
+  { nis:"013", nama:"Icha Ajeng Sevtiana" },
+  { nis:"014", nama:"Jazila Rahma Mufidah" },
+  { nis:"015", nama:"Mei Wulansari" },
+  { nis:"016", nama:"Melati Putri Zahratusita" },
+  { nis:"017", nama:"Moh Ardiansyah Tri" },
+  { nis:"018", nama:"Moh Maulana Ridlo" },
+  { nis:"019", nama:"Mutiara Citra Widiasari" },
+  { nis:"020", nama:"Naufal Agastian Wiyanata" }
 ];
 
-// ================== LOG ABSENSI ==================
-function renderLogAbsensi(){
-    const tbody=document.querySelector("#tabelAbsensi tbody");
-    if(!tbody) return;
-    tbody.innerHTML="";
-    daftarSiswa.forEach(s=>{
-        tbody.innerHTML+=`
-        <tr>
-            <td>-</td>
-            <td>${s.no}</td>
-            <td>${s.nama}</td>
-            <td>-</td>
-            <td>${s.absen?"HADIR":"-"}</td>
-            <td>${s.absen?"Sudah Absen":"-"}</td>
-        </tr>`;
-    });
-}
-renderLogAbsensi();
+/* ==============================
+   STATE & LOG
+============================== */
+let sudahAbsen = false;
+let logAbsensi = JSON.parse(localStorage.getItem("logAbsensi") || "{}");
 
-// ================== NOTIFIKASI ==================
+/* ==============================
+   UTIL
+============================== */
 function showNotif(msg){
-    const n=document.getElementById("notif");
-    if(!n) return;
-    n.innerText=msg;
-    setTimeout(()=>n.innerText="",2000);
+  alert(msg);
 }
 
-function showSuccess(){
-    const s=document.getElementById("successMsg");
-    if(s) s.style.display="block";
+function validasiSiswa(nis, nama){
+  return DATA_SISWA.find(
+    s => s.nis === nis && s.nama.toLowerCase() === nama.toLowerCase()
+  );
 }
 
-// ================== QR SCAN ==================
-let sudahAbsen=false;
-const qrReader=new Html5Qrcode("reader");
-
-Html5Qrcode.getCameras().then(cameras=>{
-    if(!cameras.length){
-        showNotif("Kamera tidak ditemukan");
-        return;
-    }
-
-    qrReader.start(
-        cameras[0].id,
-        {fps:10,qrbox:250},
-        qr=>{
-            if(sudahAbsen) return;
-
-            const data=qr.split("|");
-            if(data.length<3){
-                showNotif("Absensi salah");
-                return;
-            }
-
-            const no=parseInt(data[2]);
-            const siswa=daftarSiswa.find(s=>s.no===no);
-
-            if(!siswa){
-                showNotif("Absensi salah");
-                return;
-            }
-
-            if(siswa.absen){
-                showNotif("Sudah absen");
-                return;
-            }
-
-            siswa.absen=true;
-            sudahAbsen=true;
-
-            showSuccess();
-            renderLogAbsensi();
-        }
-    );
-});
-
-// ================== KIRIM WA (REKAP) ==================
-function kirimWAmanual(){
-    let pesan="DAFTAR ABSENSI SISWA\n\n";
-    daftarSiswa.forEach(s=>{
-        pesan+=`${s.no}. ${s.nama}`;
-        if(s.absen) pesan+=" - Sudah Absen";
-        pesan+="\n";
-    });
-
-    window.open(
-        "https://wa.me/6285604757431?text="+encodeURIComponent(pesan),
-        "_blank"
-    );
+function simpanLog(nis){
+  logAbsensi[nis] = true;
+  localStorage.setItem("logAbsensi", JSON.stringify(logAbsensi));
 }
 
-// ================== TOMBOL WA ==================
-const btnWA=document.getElementById("kirimWAQR");
-if(btnWA){
-    btnWA.addEventListener("click",()=>{
-        kirimWAmanual();
-    });
+/* ==============================
+   FORMAT PESAN WA (SEMUA SISWA)
+============================== */
+function formatPesanWA(){
+  let teks = "LAPORAN ABSENSI SISWA\n\n";
+  DATA_SISWA.forEach((s, i) => {
+    teks += `${i+1}. ${s.nama} ${logAbsensi[s.nis] ? "Sudah Absen" : "Belum Absen"}\n`;
+  });
+  return encodeURIComponent(teks);
+}
+
+/* ==============================
+   KIRIM KE WHATSAPP
+============================== */
+function kirimKeWA(){
+  const pesan = formatPesanWA();
+  const noWA = "6285604757431";
+  window.location.href = `https://wa.me/${noWA}?text=${pesan}`;
+}
+
+/* ==============================
+   ABSENSI MANUAL / QR (INTI)
+============================== */
+function prosesAbsensi(nis, nama){
+  const valid = validasiSiswa(nis, nama);
+
+  if(!valid){
+    showNotif("❌ ABSEN SALAH");
+    sudahAbsen = false;
+    return; // ⛔ STOP — TIDAK MASUK WA
+  }
+
+  if(logAbsensi[nis]){
+    showNotif("⚠️ SUDAH ABSEN");
+    return; // ⛔ STOP — TIDAK MASUK WA
+  }
+
+  // ✅ ABSEN BERHASIL
+  simpanLog(nis);
+  sudahAbsen = true;
+  showNotif("✅ ABSENSI BERHASIL");
+
+  // ➜ MASUK WA
+  kirimKeWA();
+}
+
+/* ==============================
+   CONTOH PEMANGGILAN
+   (hubungkan ke tombol / QR)
+============================== */
+// prosesAbsensi("01", "Afgan Aditya Syahreza");
+
 }
 </script>
