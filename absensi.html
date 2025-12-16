@@ -5,154 +5,137 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Absensi Siswa</title>
 <script src="https://unpkg.com/html5-qrcode"></script>
-
+<link rel="stylesheet" href="style.css">
 <style>
-body { font-family:'Poppins',sans-serif;background:linear-gradient(135deg,#f5f7ff,#e0ebff);display:flex;justify-content:center;padding:30px;}
-.card {background:#fff;padding:30px 40px;border-radius:20px;box-shadow:0 15px 40px rgba(0,0,0,0.1);width:100%;max-width:500px;}
-input,select,button {width:100%;margin:10px 0;padding:12px;border-radius:10px;border:1px solid #ccc;font-size:15px;}
-button {cursor:pointer;font-weight:600;}
-#kirimManual {background:#346dff;color:#fff;}
-.success {display:none;position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#4caf50;color:#fff;padding:15px 30px;border-radius:10px;}
-.notif {position:fixed;bottom:25px;left:50%;transform:translateX(-50%);background:red;color:#fff;padding:14px 22px;border-radius:14px;opacity:0;transition:.3s;}
-.notif.show {opacity:1;}
+body { font-family: 'Poppins', sans-serif; background: linear-gradient(135deg,#f5f7ff,#e0ebff); display:flex; justify-content:center; padding:30px; }
+.card { background:#fff; padding:30px 40px; border-radius:20px; box-shadow:0 15px 40px rgba(0,0,0,0.1); width:100%; max-width:500px; }
+input, select, button { width:100%; margin:10px 0; padding:12px; border-radius:10px; border:1px solid #ccc; font-size:15px; }
+button { cursor:pointer; font-weight:600; transition:0.3s; }
+button#kirimManual { background:#346dff; color:#fff; }
+button#kirimManual:hover { background:#1a52d1; }
+.success { display:none; position:fixed; top:20px; left:50%; transform:translateX(-50%); background:#4caf50; color:#fff; padding:15px 30px; border-radius:10px; box-shadow:0 5px 15px rgba(0,0,0,0.2); z-index:1000; font-weight:600; text-align:center; }
+.notif { position:fixed; bottom:25px; left:50%; transform:translateX(-50%) scale(0.8); background:rgba(255,80,80,0.95); color:#fff; padding:14px 22px; border-radius:14px; font-size:15px; font-weight:600; box-shadow:0 4px 15px rgba(0,0,0,0.15); opacity:0; transition:0.35s; pointer-events:none; text-align:center; }
+.notif.show { opacity:1; transform:translateX(-50%) scale(1); }
 </style>
 </head>
-
 <body>
+
 <div class="card">
-<h1>Absensi Siswa</h1>
+    <h1>Absensi Siswa</h1>
 
-<h2>Scan QR</h2>
-<div id="reader"></div>
-<p id="scanStatus">Mengaktifkan kamera...</p>
+    <h2>Scan QR</h2>
+    <div id="reader"></div>
+    <p id="scanStatus" style="font-size:14px;color:#555">Mengaktifkan kamera...</p>
 
-<h2>Isi Manual</h2>
-<input id="manualId" placeholder="NIS">
-<input id="manualNama" placeholder="Nama Lengkap">
-<input id="manualKelas" placeholder="No Absen">
-<select id="manualStatus">
-<option>Hadir</option>
-<option>Izin</option>
-<option>Sakit</option>
-</select>
-<input id="manualKet" placeholder="Keterangan">
-
-<button id="kirimManual">Kirim Absen</button>
+    <h2>Isi Manual</h2>
+    <input id="manualId" placeholder="NIS" autocomplete="off" />
+    <input id="manualNama" placeholder="Nama Lengkap" />
+    <input id="manualKelas" placeholder="No Absen / Kelas" />
+    <select id="manualStatus">
+        <option value="Hadir">Hadir</option>
+        <option value="Izin">Izin</option>
+        <option value="Sakit">Sakit</option>
+    </select>
+    <input id="manualKet" placeholder="Keterangan (opsional)" />
+    <button id="kirimManual">Kirim Absen</button>
 </div>
 
 <div id="successMsg" class="success">✅ Absensi Berhasil</div>
 <div id="notif" class="notif"></div>
 
 <script>
-/* ================= DATA SISWA ================= */
-const DATA_SISWA = [
-  {nis:"01",nama:"Afgan Aditya Syahreza"},
-  {nis:"02",nama:"Andin Amelian"},
-  {nis:"03",nama:"Anindya Novika"},
-  {nis:"04",nama:"Aryasatya Toru Mustofa"},
-  {nis:"05",nama:"Asyla Nayla Diah Susanto"},
-  {nis:"06",nama:"Audy Melinda Putri"},
-  {nis:"07",nama:"Aurelia Zera Indri Calista"},
-  {nis:"08",nama:"Avansya Syaputra Pratama"},
-  {nis:"09",nama:"Dava Alreza Saputra"},
-  {nis:"010",nama:"Dhiva Gina Rosita"},
-  {nis:"011",nama:"Dienda Rafita Cahaya"},
-  {nis:"012",nama:"Friska Aprilliana"},
-  {nis:"013",nama:"Icha Ajeng Sevtiana"},
-  {nis:"014",nama:"Jazila Rahma Mufidah"},
-  {nis:"015",nama:"Mei Wulansari"},
-  {nis:"016",nama:"Melati Putri Zahratusita"},
-  {nis:"017",nama:"Moh Ardiansyah Tri"},
-  {nis:"018",nama:"Moh Maulana Ridlo"},
-  {nis:"019",nama:"Mutiara Citra Widiasari"},
-  {nis:"020",nama:"Naufal Agastian Wiyanata"}
-];
+let sudahAbsen = false;
 
-let sudahAbsen=false;
-let logAbsen=JSON.parse(localStorage.getItem("logAbsen")||"{}");
+/* AUDIO */
+const audioBenar = new Audio("https://actions.google.com/sounds/v1/cartoon/clang_and_wobble.ogg");
+const audioSalah = new Audio("https://actions.google.com/sounds/v1/cartoon/wood_plank_flicks.ogg");
 
-/* ================= UTIL ================= */
-function showNotif(msg){
-  const n=document.getElementById("notif");
-  n.innerText=msg;
-  n.classList.add("show");
-  setTimeout(()=>n.classList.remove("show"),2000);
-}
+/* DATA SISWA VALID */
+const dataSiswa = {
+ "01":"Afgan Aditya Syahreza",
+ "02":"Andin Amelian",
+ "03":"Anindya Novika",
+ "04":"Aryasatya Toru Mustofa",
+ "05":"Asyla Nayla Diah Susanto",
+ "06":"Audy Melinda Putri",
+ "07":"Aurelia Zera Indri Calista",
+ "08":"Avansya Syaputra Pratama",
+ "09":"Dava Alreza Saputra",
+ "010":"Dhiva Gina Rosita",
+ "011":"Dienda Rafita Cahaya",
+ "012":"Friska Aprilliana",
+ "013":"Icha Ajeng Sevtiana",
+ "014":"Jazila Rahma Mufidah",
+ "015":"Mei Wulansari",
+ "016":"Melati Putri Zahratusita",
+ "017":"Moh Ardiansyah Tri",
+ "018":"Moh Maulana Ridlo",
+ "019":"Mutiara Citra Widiasari",
+ "020":"Naufal Agastian Wiyanata"
+};
 
 function showSuccess(){
-  const s=document.getElementById("successMsg");
-  s.style.display="block";
-  setTimeout(()=>s.style.display="none",2000);
+ document.getElementById("successMsg").style.display="block";
+ setTimeout(()=>document.getElementById("successMsg").style.display="none",2000);
 }
 
-function validSiswa(nis,nama){
-  return DATA_SISWA.find(
-    s=>s.nis===nis && s.nama.toLowerCase()===nama.toLowerCase()
-  );
+function showNotif(msg){
+ const n=document.getElementById("notif");
+ n.innerText=msg;
+ n.classList.add("show");
+ setTimeout(()=>n.classList.remove("show"),2000);
 }
 
-/* ================= WA ================= */
-function kirimWA(nama,no_absen,nis,status,ket){
-  let pesan=`ABSENSI SISWA
-Nama: ${nama}
-NIS: ${nis}
-No Absen: ${no_absen}
+function kunciForm(){
+ document.querySelectorAll("input,select,button").forEach(e=>e.disabled=true);
+ sudahAbsen=true;
+}
+
+/* WA */
+function kirimKeWA(nis,nama,no_absen,status,ket){
+ const pesan = `ABSENSI SISWA
+${nis}. ${nama} - SUDAH ABSEN
 Status: ${status}
-Keterangan: ${ket||"-"}
+Keterangan: ${ket || "-"}
 Tanggal: ${new Date().toLocaleDateString()}`;
-
-  window.open(
-    "https://wa.me/6285604757431?text="+encodeURIComponent(pesan),
-    "_blank"
-  );
+ window.open("https://wa.me/6285604757431?text="+encodeURIComponent(pesan),"_blank");
 }
 
-/* ================= QR ================= */
-const reader=new Html5Qrcode("reader");
-Html5Qrcode.getCameras().then(cams=>{
-  if(cams.length){
-    reader.start(cams[0].id,{fps:10,qrbox:250},qr=>{
-      const p=qr.split("|");
-      if(p.length<3){showNotif("QR tidak valid");return;}
-      manualId.value=p[0];
-      manualNama.value=p[1];
-      manualKelas.value=p[2];
-    });
-  }
+/* QR */
+const reader = new Html5Qrcode("reader");
+Html5Qrcode.getCameras().then(c=>{
+ if(c.length){
+  reader.start(c[0].id,{fps:10,qrbox:250},qr=>{
+   const p=qr.split("|");
+   if(p.length>=3){
+    manualId.value=p[0];
+    manualNama.value=p[1];
+    manualKelas.value=p[2];
+   }
+  });
+ }
 });
 
-/* ================= SUBMIT ================= */
+/* SUBMIT */
 kirimManual.onclick=()=>{
-  if(sudahAbsen) return;
+ if(sudahAbsen) return;
 
-  const nis=manualId.value.trim();
-  const nama=manualNama.value.trim();
-  const no_absen=manualKelas.value.trim();
-  const status=manualStatus.value;
-  const ket=manualKet.value.trim();
+ const nis=manualId.value.trim();
+ const nama=manualNama.value.trim();
+ const kelas=manualKelas.value.trim();
+ const status=manualStatus.value;
+ const ket=manualKet.value.trim();
 
-  if(!nis||!nama||!no_absen){
-    showNotif("Form belum lengkap");
-    return;
-  }
+ if(!dataSiswa[nis] || dataSiswa[nis]!==nama){
+  audioSalah.play();
+  showNotif("❌ ABSEN SALAH");
+  return;
+ }
 
-  const valid=validSiswa(nis,nama);
-  if(!valid){
-    showNotif("❌ ABSENSI SALAH");
-    return; // ⛔ STOP — TIDAK KE WA
-  }
-
-  if(logAbsen[nis]){
-    showNotif("⚠️ SUDAH ABSEN");
-    return;
-  }
-
-  logAbsen[nis]=true;
-  localStorage.setItem("logAbsen",JSON.stringify(logAbsen));
-
-  sudahAbsen=true;
-  showSuccess();
-  kirimWA(nama,no_absen,nis,status,ket);
+ audioBenar.play();
+ showSuccess();
+ kunciForm();
+ kirimKeWA(nis,nama,kelas,status,ket);
 };
 </script>
 </body>
