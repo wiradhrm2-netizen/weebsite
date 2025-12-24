@@ -4,18 +4,23 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>AOS | Absensi Online Siswa</title>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
+/* ===== RESET ===== */
 *{margin:0;padding:0;box-sizing:border-box}
 body{
     font-family:'Poppins',sans-serif;
-    background:linear-gradient(135deg,#eef5ff,#dbeafe);
-    color:#1e3a8a;
+    background:
+      radial-gradient(circle at top left,#e8f1ff,transparent 45%),
+      radial-gradient(circle at bottom right,#dbe9ff,transparent 45%),
+      linear-gradient(135deg,#f4f8ff,#e6f0ff);
+    color:#1a2b5f;
     min-height:100vh;
 }
 
-/* LOADING */
+/* ===== LOADING ===== */
 #loadingAOS{
     position:fixed;inset:0;
     background:#fff;
@@ -26,33 +31,36 @@ body{
     z-index:9999;
 }
 .loader-circle{
-    width:60px;height:60px;
-    border:6px solid #dbeafe;
-    border-top:6px solid #3b82f6;
+    width:70px;height:70px;
+    border:6px solid #dbe4ff;
+    border-top:6px solid #4da3ff;
     border-radius:50%;
     animation:spin 1s linear infinite;
 }
 @keyframes spin{to{transform:rotate(360deg)}}
 
-/* HEADER */
+/* ===== HEADER ===== */
 header{
-    display:grid;
-    grid-template-columns:40px 1fr 40px;
+    display:flex;
+    justify-content:space-between;
     align-items:center;
-    padding:16px 24px;
-    background:rgba(255,255,255,.8);
+    padding:20px 40px;
     backdrop-filter:blur(10px);
-    box-shadow:0 8px 20px rgba(0,0,0,.06);
+    background:rgba(255,255,255,.7);
+    box-shadow:0 8px 20px rgba(0,0,0,.05);
 }
-header img{
-    grid-column:2;
-    margin:auto;
-    height:42px;
+.evscientist{
+    font-size:1.4rem;
+    font-weight:900;
+    letter-spacing:3px;
+    background:linear-gradient(135deg,#9ad9ff,#4da3ff);
+    -webkit-background-clip:text;
+    color:transparent;
 }
 
-/* HAMBURGER */
+/* ===== HAMBURGER ===== */
 .hamburger{
-    width:32px;height:24px;
+    width:34px;height:26px;
     display:flex;
     flex-direction:column;
     justify-content:space-between;
@@ -60,7 +68,7 @@ header img{
 }
 .hamburger span{
     height:4px;
-    background:#3b82f6;
+    background:#4da3ff;
     border-radius:2px;
     transition:.3s;
 }
@@ -68,13 +76,13 @@ header img{
 .hamburger.active span:nth-child(2){opacity:0}
 .hamburger.active span:nth-child(3){transform:rotate(-45deg) translate(6px,-6px)}
 
-/* SIDEBAR */
+/* ===== SIDEBAR ===== */
 .sidebar{
     position:fixed;
     right:-260px;top:0;
     width:260px;height:100%;
-    background:#3b82f6;
-    padding:90px 24px;
+    background:#4da3ff;
+    padding:80px 25px;
     transition:.3s;
     z-index:1000;
 }
@@ -87,43 +95,53 @@ header img{
     font-size:1.05rem;
 }
 
-/* OVERLAY */
+/* ===== OVERLAY ===== */
 .overlay{
     position:fixed;inset:0;
-    background:rgba(0,0,0,.4);
+    background:rgba(0,0,0,.35);
     opacity:0;visibility:hidden;
+    transition:.3s;
 }
 .overlay.active{opacity:1;visibility:visible}
 
-/* SECTION */
-.section{display:none;padding:32px 16px}
+/* ===== SECTION ===== */
+.section{display:none;padding:40px 20px}
 .section.active{display:block}
 
-/* CARD */
+/* ===== CARD ===== */
 .card{
-    max-width:1100px;
+    max-width:900px;
     margin:auto;
-    background:#fff;
+    background:rgba(255,255,255,.9);
+    backdrop-filter:blur(14px);
     border-radius:20px;
-    padding:32px;
+    padding:40px;
     box-shadow:0 20px 40px rgba(0,0,0,.08);
 }
 
-/* BUTTON */
+/* ===== BUTTON ===== */
 button{
-    background:#3b82f6;
+    background:#4da3ff;
     color:#fff;
     border:none;
-    padding:12px 28px;
+    padding:14px 32px;
     border-radius:10px;
     font-weight:600;
     cursor:pointer;
 }
 
-/* TABLE */
-table{width:100%;border-collapse:collapse;margin-top:20px}
+/* ===== LOGO ===== */
+.logo-center{
+    display:block;
+    margin:20px auto 25px;
+    width:90px;
+    opacity:.95;
+}
+
+/* ===== TABLE ===== */
+table{width:100%;border-collapse:collapse}
 th{
-    background:#3b82f6;
+    background:#4da3ff;
     color:#fff;
     padding:12px;
 }
@@ -131,41 +149,23 @@ td{
     padding:10px;
     text-align:center;
 }
-tr:nth-child(even){background:#f1f5ff}
+tr:nth-child(even){background:#f2f7ff}
 
-/* STATS */
-.stats{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
-    gap:16px;
-    margin:24px 0;
-}
-.stat{
-    padding:22px;
-    border-radius:16px;
-    color:#fff;
-    text-align:center;
-}
-.hadir{background:#22c55e}
-.izin{background:#3b82f6}
-.sakit{background:#facc15}
-.alpha{background:#ef4444}
-
-/* MODAL */
+/* ===== MODAL ===== */
 .modal{
     position:fixed;inset:0;
     background:rgba(0,0,0,.4);
     display:none;
     justify-content:center;
     align-items:center;
+    z-index:2000;
 }
 .modal.active{display:flex}
-.modal-content{
+.modal-box{
     background:#fff;
-    padding:28px;
-    border-radius:18px;
-    max-width:400px;
-    width:90%;
+    padding:30px;
+    border-radius:16px;
+    width:320px;
 }
 </style>
 </head>
@@ -177,10 +177,10 @@ tr:nth-child(even){background:#f1f5ff}
 </div>
 
 <header>
+    <div class="evscientist">EVSCIENTIST FIVE</div>
     <div class="hamburger" id="hamburger">
         <span></span><span></span><span></span>
     </div>
-    <img src="AOS_logo.jpg" alt="AOS Logo">
 </header>
 
 <div class="sidebar" id="sidebar">
@@ -190,78 +190,75 @@ tr:nth-child(even){background:#f1f5ff}
 </div>
 <div class="overlay" id="overlay"></div>
 
+<!-- HOME -->
 <section class="section active" id="home">
-<div class="card">
-<h1>AOS — Absensi Online Siswa</h1>
-<p>Sistem absensi digital modern.</p><br>
-<button onclick="location.href='absensi.html'">Masuk ke Absensi</button>
-</div>
+    <div class="card" style="text-align:center">
+        <h1>AOS — Absensi Online Siswa</h1>
+
+        <!-- LOGO TENGAH -->
+        <img src="AOS_logo.jpg" class="logo-center">
+
+        <p>Sistem absensi digital modern & profesional.</p><br>
+        <button onclick="location.href='absensi.html'">Masuk ke Absensi</button>
+    </div>
 </section>
 
+<!-- DASHBOARD -->
 <section class="section" id="dashboard">
-<div class="card">
-<h2>Dashboard Absensi</h2>
-
-<select id="bulanFilter">
-<option value="">Semua Bulan</option>
-<option value="0">Januari</option>
-<option value="1">Februari</option>
-<option value="2">Maret</option>
-</select>
-
-<div class="stats">
-<div class="stat hadir"><h3 id="hadir">0</h3>Hadir</div>
-<div class="stat izin"><h3 id="izin">0</h3>Izin</div>
-<div class="stat sakit"><h3 id="sakit">0</h3>Sakit</div>
-<div class="stat alpha"><h3 id="alpha">0</h3>Alpha</div>
-</div>
-
-<canvas id="chart"></canvas>
-</div>
+    <div class="card">
+        <h2>📊 Dashboard Absensi</h2><br>
+        <label>Filter Bulan:</label>
+        <input type="month" id="filterBulan" onchange="loadDashboard()">
+        <br><br>
+        <canvas id="chart"></canvas>
+    </div>
 </section>
 
+<!-- DATA SISWA -->
 <section class="section" id="siswa">
-<div class="card">
-<h2>Daftar Siswa</h2>
-<table>
-<thead>
-<tr><th>NIS</th><th>Nama</th><th>Aksi</th></tr>
-</thead>
-<tbody id="siswaList"></tbody>
-</table>
-</div>
+    <div class="card">
+        <h2>👥 Data Siswa</h2><br>
+        <table>
+            <thead>
+                <tr><th>NIS</th><th>Nama</th><th>Aksi</th></tr>
+            </thead>
+            <tbody id="listSiswa"></tbody>
+        </table>
+    </div>
 </section>
 
+<!-- MODAL PREVIEW -->
 <div class="modal" id="modal">
-<div class="modal-content">
-<h3 id="modalNama"></h3>
-<p>Hadir: <b id="mHadir"></b></p>
-<p>Izin: <b id="mIzin"></b></p>
-<p>Sakit: <b id="mSakit"></b></p>
-<p>Alpha: <b id="mAlpha"></b></p><br>
-<button onclick="modal.classList.remove('active')">Tutup</button>
-</div>
+    <div class="modal-box">
+        <h3 id="mNama"></h3>
+        <p>Hadir: <b id="mHadir"></b></p>
+        <p>Izin: <b id="mIzin"></b></p>
+        <p>Sakit: <b id="mSakit"></b></p>
+        <p>Alpha: <b id="mAlpha"></b></p><br>
+        <button onclick="modal.classList.remove('active')">Tutup</button>
+    </div>
 </div>
 
 <script>
-window.onload=()=>setTimeout(()=>loadingAOS.remove(),800)
+window.onload=()=>setTimeout(()=>loadingAOS.remove(),1000)
 
-hamburger.onclick=()=>toggle()
-overlay.onclick=()=>toggle(false)
-function toggle(force){
-hamburger.classList.toggle("active",force)
-sidebar.classList.toggle("active",force)
-overlay.classList.toggle("active",force)
+/* NAV */
+hamburger.onclick=()=>{
+    hamburger.classList.toggle("active")
+    sidebar.classList.toggle("active")
+    overlay.classList.toggle("active")
 }
+overlay.onclick=()=>{hamburger.click()}
 document.querySelectorAll("[data-section]").forEach(l=>{
-l.onclick=e=>{
-e.preventDefault()
-document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
-document.getElementById(l.dataset.section).classList.add("active")
-toggle(false)
-}
+    l.onclick=e=>{
+        e.preventDefault()
+        document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"))
+        document.getElementById(l.dataset.section).classList.add("active")
+        hamburger.click()
+    }
 })
 
+/* DATA SISWA */
 const siswa=[
 {nis:"01",nama:"Afgan Aditya Syahreza"},
 {nis:"02",nama:"Andin Amelian"},
@@ -285,28 +282,41 @@ const siswa=[
 {nis:"020",nama:"Naufal Agastian Wiyanata"}
 ]
 
-const list=document.getElementById("siswaList")
-siswa.forEach(s=>{
-list.innerHTML+=`
+const absensi=JSON.parse(localStorage.getItem("dataAbsensi"))||[]
+
+listSiswa.innerHTML=siswa.map(s=>`
 <tr>
 <td>${s.nis}</td>
 <td>${s.nama}</td>
-<td>
-<button onclick="preview('${s.nama}')">Preview</button>
-</td>
-</tr>`
-})
+<td><button onclick="preview('${s.nama}')">Preview</button></td>
+</tr>`).join("")
 
 function preview(nama){
-const data=JSON.parse(localStorage.getItem("dataAbsensi"))||[]
-const f=data.filter(d=>d.nama===nama)
-mHadir.innerText=f.filter(d=>d.status==="Hadir").length
-mIzin.innerText=f.filter(d=>d.status==="Izin").length
-mSakit.innerText=f.filter(d=>d.status==="Sakit").length
-mAlpha.innerText=f.filter(d=>d.status==="Alpha").length
-modalNama.innerText=nama
-modal.classList.add("active")
+    const d=absensi.filter(a=>a.nama===nama)
+    mNama.innerText=nama
+    mHadir.innerText=d.filter(x=>x.status=="Hadir").length
+    mIzin.innerText=d.filter(x=>x.status=="Izin").length
+    mSakit.innerText=d.filter(x=>x.status=="Sakit").length
+    mAlpha.innerText=d.filter(x=>x.status=="Alpha").length
+    modal.classList.add("active")
 }
+
+/* DASHBOARD */
+function loadDashboard(){
+    new Chart(chart,{
+        type:"doughnut",
+        data:{
+            labels:["Hadir","Izin","Sakit","Alpha"],
+            datasets:[{data:[
+                absensi.filter(a=>a.status=="Hadir").length,
+                absensi.filter(a=>a.status=="Izin").length,
+                absensi.filter(a=>a.status=="Sakit").length,
+                absensi.filter(a=>a.status=="Alpha").length
+            ]}]
+        }
+    })
+}
+loadDashboard()
 </script>
 
 </body>
