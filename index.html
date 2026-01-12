@@ -32,14 +32,16 @@ body{
     text-align:center;
     animation:fadeScale 1.2s ease;
 }
+.loader-box img{
+    width:70px;
+    margin-bottom:14px;
+}
 .loader-box h1{
     letter-spacing:4px;
-    font-size:2.2rem;
+    font-size:2.1rem;
     font-weight:800;
 }
-.loader-box p{
-    opacity:.6;
-}
+.loader-box p{opacity:.6}
 
 /* HEADER */
 header{
@@ -123,14 +125,17 @@ header{
     max-width:520px;
     width:100%;
     text-align:center;
-    animation:fadeUp .9s ease;
+}
+.landing-logo{
+    width:90px;
+    margin-bottom:18px;
+    animation:fadeScale 1s ease;
 }
 .landing-title{
     font-size:2.6rem;
     font-weight:800;
     letter-spacing:4px;
     margin-bottom:12px;
-    animation:fadeScale 1s ease;
 }
 .landing-sub{
     font-size:1rem;
@@ -170,7 +175,6 @@ header{
     border-radius:16px;
     color:#fff;
     text-align:center;
-    animation:fadeScale .7s ease;
 }
 .hadir{background:#22c55e}
 .izin{background:#3b82f6}
@@ -238,6 +242,7 @@ header{
 <!-- LOADER -->
 <div id="loader">
     <div class="loader-box">
+        <img src="AOS_logo.jpg" alt="AOS Logo">
         <h1>EVSCIENTIST FIVE</h1>
         <p>Loading System...</p>
     </div>
@@ -260,6 +265,9 @@ header{
 <section class="section active" id="home">
     <div class="landing-wrapper">
         <div class="card landing-card">
+            <!-- TAMBAHAN LOGO -->
+            <img src="AOS_logo.jpg" alt="AOS Logo" class="landing-logo">
+
             <h1 class="landing-title">EVSCIENTIST FIVE</h1>
             <p class="landing-sub">
                 Absensi Online Siswa · Smart Digital Attendance System
@@ -284,91 +292,17 @@ header{
         </div>
 
         <canvas id="chart" height="120"></canvas>
+
         <h2 style="margin-top:40px">Daftar Siswa</h2>
         <div class="student-list" id="students"></div>
     </div>
 </section>
 
-<!-- MODAL -->
-<div class="modal" id="modal">
-    <div class="modal-content">
-        <h3 id="modalNama"></h3>
-        <p>Hadir: <span id="mHadir"></span></p>
-        <p>Izin: <span id="mIzin"></span></p>
-        <p>Sakit: <span id="mSakit"></span></p>
-        <p>Alpha: <span id="mAlpha"></span></p>
-        <br>
-        <button onclick="modal.classList.remove('active')">Tutup</button>
-    </div>
-</div>
-
 <script>
 const hamburger=document.getElementById("hamburger");
 const sidebar=document.getElementById("sidebar");
 const overlay=document.getElementById("overlay");
-const modal=document.getElementById("modal");
 
-const hadirEl=document.getElementById("hadir");
-const izinEl=document.getElementById("izin");
-const sakitEl=document.getElementById("sakit");
-const alphaEl=document.getElementById("alpha");
-
-const ctx=document.getElementById("chart").getContext("2d");
-let chart;
-
-const siswa=[
-{nis:"01",nama:"Afgan Aditya Syahreza"},
-{nis:"02",nama:"Andin Amelian"},
-{nis:"03",nama:"Anindya Novika"}
-];
-
-const dataAbsensi=JSON.parse(localStorage.getItem("dataAbsensi"))||[];
-const students=document.getElementById("students");
-
-siswa.forEach(s=>{
-    students.innerHTML+=`
-    <div class="student">
-        <b>${s.nama}</b><br>NIS ${s.nis}
-        <button onclick="preview('${s.nis}','${s.nama}')">Preview</button>
-    </div>`;
-});
-
-function renderData(){
-    const h=dataAbsensi.filter(x=>x.status==="Hadir").length;
-    const i=dataAbsensi.filter(x=>x.status==="Izin").length;
-    const s=dataAbsensi.filter(x=>x.status==="Sakit").length;
-    const a=dataAbsensi.filter(x=>x.status==="Alpha").length;
-
-    hadirEl.innerText=h;
-    izinEl.innerText=i;
-    sakitEl.innerText=s;
-    alphaEl.innerText=a;
-
-    if(chart) chart.destroy();
-    chart=new Chart(ctx,{
-        type:"bar",
-        data:{
-            labels:["Hadir","Izin","Sakit","Alpha"],
-            datasets:[{
-                data:[h,i,s,a],
-                backgroundColor:["#22c55e","#3b82f6","#facc15","#ef4444"]
-            }]
-        }
-    });
-}
-renderData();
-
-function preview(nis,nama){
-    const d=dataAbsensi.filter(x=>x.nis===nis);
-    modalNama.innerText=nama;
-    mHadir.innerText=d.filter(x=>x.status==="Hadir").length;
-    mIzin.innerText=d.filter(x=>x.status==="Izin").length;
-    mSakit.innerText=d.filter(x=>x.status==="Sakit").length;
-    mAlpha.innerText=d.filter(x=>x.status==="Alpha").length;
-    modal.classList.add("active");
-}
-
-/* NAV */
 hamburger.onclick=()=>{
     sidebar.classList.toggle("active");
     overlay.classList.toggle("active");
